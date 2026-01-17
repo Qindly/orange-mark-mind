@@ -31,12 +31,29 @@ help:
 # Docker 命令
 # --------------------------------------------------------------------------
 
-# 启动服务
+# 启动所有服务（包括后端）
 docker-up:
 	docker compose up -d
 	@echo "等待服务启动..."
+	@sleep 5
+	@docker compose ps
+
+# 仅启动数据库服务
+docker-up-db:
+	docker compose up -d postgres redis
+	@echo "等待数据库服务启动..."
 	@sleep 3
 	@docker compose ps
+
+# 构建后端镜像
+docker-build:
+	docker compose build backend
+	@echo "后端镜像构建完成"
+
+# 重新构建并启动后端
+docker-rebuild:
+	docker compose up -d --build backend
+	@echo "后端服务已重新构建并启动"
 
 # 停止服务
 docker-down:
@@ -50,6 +67,10 @@ docker-clean:
 # 查看日志
 docker-logs:
 	docker compose logs -f
+
+# 查看后端日志
+docker-logs-backend:
+	docker compose logs -f backend
 
 # 查看容器状态
 docker-ps:

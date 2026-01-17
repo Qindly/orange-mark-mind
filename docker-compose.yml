@@ -64,6 +64,60 @@ services:
     networks:
       - omm-network
 
+  # --------------------------------------------------------------------------
+  # 后端 API 服务
+  # 端口: 60100
+  # --------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: omm-backend
+    restart: unless-stopped
+    ports:
+      - "60100:60100"
+    environment:
+      # 服务配置
+      PORT: 60100
+      GIN_MODE: ${GIN_MODE:-release}
+
+      # 数据库配置（使用容器内部网络）
+      DATABASE_URL: postgres://${POSTGRES_USER:-omm_user}:${POSTGRES_PASSWORD:-omm_password_change_me}@postgres:5432/${POSTGRES_DB:-orange_mark_mind}?sslmode=disable
+
+      # Redis 配置（使用容器内部网络）
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password_change_me}@redis:6379/0
+
+      # JWT 配置
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_key_change_me}
+      JWT_ACCESS_TOKEN_EXPIRE: ${JWT_ACCESS_TOKEN_EXPIRE:-900}
+      JWT_REFRESH_TOKEN_EXPIRE: ${JWT_REFRESH_TOKEN_EXPIRE:-604800}
+
+      # 加密配置
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your_32_byte_encryption_key_here}
+
+      TZ: Asia/Shanghai
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:60100/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    networks:
+      - omm-network
+
 # 数据卷 - 持久化存储
 volumes:
   postgres_data:

@@ -1,0 +1,77 @@
+# ============================================================================
+# Orange Mark Mind - Docker Compose 配置
+# 用于本地开发和服务器部署
+# ============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # PostgreSQL 数据库
+  # 端口: 60101
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: omm-postgres
+    restart: unless-stopped
+    ports:
+      - "60101:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-orange_mark_mind}
+      POSTGRES_USER: ${POSTGRES_USER:-omm_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-omm_password_change_me}
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-omm_user} -d ${POSTGRES_DB:-orange_mark_mind}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - omm-network
+
+  # --------------------------------------------------------------------------
+  # Redis 缓存
+  # 端口: 60102
+  # 用于: JWT Refresh Token 存储、会话管理、缓存
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: omm-redis
+    restart: unless-stopped
+    ports:
+      - "60102:6379"
+    environment:
+      TZ: Asia/Shanghai
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password_change_me}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-a",
+          "${REDIS_PASSWORD:-redis_password_change_me}",
+          "ping",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - omm-network
+
+# 数据卷 - 持久化存储
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# 网络
+networks:
+  omm-network:
+    driver: bridge

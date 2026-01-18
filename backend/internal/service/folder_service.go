@@ -105,8 +105,9 @@ func (s *FolderService) GetList(userID int64, flat bool) ([]model.Folder, error)
 		if err != nil {
 			return nil, err
 		}
-		// 为每个文件夹添加文档数量
+		// 为每个文件夹添加文档数量，并确保 FolderID 已设置
 		for i := range folders {
+			folders[i].AfterFind() // 确保 FolderID 被设置
 			count, _ := s.folderRepo.CountDocumentsByFolderID(folders[i].ID)
 			folders[i].DocumentCount = &count
 		}
@@ -125,8 +126,9 @@ func (s *FolderService) buildTree(userID int64) ([]model.Folder, error) {
 		return nil, err
 	}
 
-	// 为每个文件夹添加文档数量
+	// 为每个文件夹添加文档数量，并确保 FolderID 已设置
 	for i := range allFolders {
+		allFolders[i].AfterFind() // 确保 FolderID 被设置
 		count, _ := s.folderRepo.CountDocumentsByFolderID(allFolders[i].ID)
 		allFolders[i].DocumentCount = &count
 	}
@@ -138,7 +140,7 @@ func (s *FolderService) buildTree(userID int64) ([]model.Folder, error) {
 		folderMap[allFolders[i].ID] = &allFolders[i]
 	}
 
-	// 构建树
+	// 构建树（使用指针操作避免值拷贝问题）
 	var rootFolders []model.Folder
 	for i := range allFolders {
 		folder := &allFolders[i]

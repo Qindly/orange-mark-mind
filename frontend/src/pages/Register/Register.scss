@@ -1,0 +1,27 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.register-form {
+  @include flex-column;
+  gap: $spacing-md;
+}
+
+.register-success {
+  text-align: center;
+  padding: $spacing-lg 0;
+  
+  &__icon {
+    font-size: 64px;
+    margin-bottom: $spacing-md;
+  }
+  
+  h2 {
+    font-size: $font-size-2xl;
+    color: $color-success;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    color: $color-text-secondary;
+  }
+}

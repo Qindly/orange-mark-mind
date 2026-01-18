@@ -1,0 +1,60 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  border-bottom: 1px solid $color-border-light;
+  
+  &__content {
+    @include flex-between;
+    height: 64px;
+  }
+  
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: $font-size-xl;
+    font-weight: 600;
+    color: $color-text;
+    text-decoration: none;
+  }
+  
+  &__logo-icon {
+    font-size: 28px;
+  }
+  
+  &__logo-text {
+    @include gradient-text;
+  }
+  
+  &__nav {
+    display: flex;
+    gap: $spacing-xl;
+    
+    a {
+      color: $color-text-secondary;
+      font-size: $font-size-sm;
+      transition: color $transition-fast;
+      
+      &:hover {
+        color: $color-primary;
+      }
+    }
+    
+    @include respond-to(md) {
+      display: none;
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+  }
+}

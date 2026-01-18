@@ -1,22 +1,14 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import Sidebar from '../Sidebar';
-import type { MenuKey } from '../Sidebar';
-import { logout } from '../../api/auth';
-import type { UserInfo } from '../../types';
+import { useNavigate, Link, Outlet } from 'react-router-dom';
+import Sidebar from '@/layouts/Sidebar';
+import { logout } from '@/api/auth';
+import type { UserInfo } from '@/types';
 import './DashboardLayout.scss';
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-  activeMenu?: MenuKey;
-  onMenuChange?: (key: MenuKey) => void;
-}
-
-function DashboardLayout({ children, activeMenu, onMenuChange }: DashboardLayoutProps) {
+function DashboardLayout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
-  // 从 localStorage 获取用户信息
   const getUserInfo = (): UserInfo | null => {
     const userInfo = localStorage.getItem('user_info');
     if (userInfo) {
@@ -80,11 +72,11 @@ function DashboardLayout({ children, activeMenu, onMenuChange }: DashboardLayout
       {/* B 部分：左右布局 */}
       <div className="dashboard-layout__body">
         {/* C 部分：侧边栏 */}
-        <Sidebar activeMenu={activeMenu} onMenuChange={onMenuChange} />
+        <Sidebar />
         
-        {/* D 部分：内容区 */}
+        {/* D 部分：内容区 - 使用 Outlet 渲染子路由 */}
         <main className="dashboard-layout__content">
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>

@@ -1,0 +1,7 @@
+@use '../../../styles/variables' as *;
+
+.templates-page {
+  &__content {
+    margin-top: $spacing-lg;
+  }
+}

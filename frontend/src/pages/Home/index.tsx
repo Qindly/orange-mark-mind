@@ -1,4 +1,4 @@
-import { Navbar, Footer } from '../../layouts';
+import { Navbar, Footer } from '@/layouts';
 import './Home.scss';
 
 function Home() {

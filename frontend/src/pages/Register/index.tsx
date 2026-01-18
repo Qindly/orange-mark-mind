@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthCard } from '../../components';
-import { register } from '../../api/auth';
+import { AuthCard } from '@/components';
+import { register } from '@/api/auth';
 import './Register.scss';
 
 function Register() {

@@ -1,0 +1,106 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.doc-loading,
+.doc-error {
+  @include flex-center;
+  height: 100%;
+  color: $color-text-light;
+  font-size: $font-size-lg;
+}
+
+.document-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  &__header {
+    @include flex-between;
+    padding: $spacing-lg $spacing-xl;
+    border-bottom: 1px solid $color-border-light;
+    flex-shrink: 0;
+  }
+  
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $color-text;
+  }
+  
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    .doc-star {
+      font-size: 18px;
+    }
+  }
+  
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: $spacing-xl;
+  }
+  
+  &__editor {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    padding: $spacing-lg;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-md;
+    font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    font-size: $font-size-sm;
+    line-height: 1.8;
+    resize: none;
+    
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+  }
+  
+  &__body {
+    max-width: 100%;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+}
+
+// Markdown 渲染样式
+.doc-h1 {
+  font-size: $font-size-2xl;
+  font-weight: 700;
+  color: $color-text;
+  margin: $spacing-lg 0 $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $color-border-light;
+}
+
+.doc-h2 {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $color-text;
+  margin: $spacing-lg 0 $spacing-sm;
+}
+
+.doc-h3 {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $color-text;
+  margin: $spacing-md 0 $spacing-sm;
+}
+
+.doc-paragraph {
+  font-size: $font-size-base;
+  color: $color-text;
+  margin: $spacing-sm 0;
+}
+
+.doc-list-item {
+  font-size: $font-size-base;
+  color: $color-text;
+  margin: $spacing-xs 0;
+  padding-left: $spacing-md;
+}

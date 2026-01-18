@@ -5,3 +5,7 @@ export { default as DocumentItem } from './common/DocumentItem';
 export { default as TabGroup } from './common/TabGroup';
 export { default as PageHeader } from './common/PageHeader';
 export { default as EmptyState } from './common/EmptyState';
+export { default as Modal } from './common/Modal';
+export { default as CreateDocumentModal } from './common/CreateDocumentModal';
+export { default as CreateFolderModal } from './common/CreateFolderModal';
+export { default as ResizableSidebar } from './common/ResizableSidebar';

@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchFolders } from '@/api/documents';
 import type { Folder } from '@/types';
 import './SidebarFolders.scss';
 
 function SidebarFolders() {
+  const navigate = useNavigate();
   const [folders, setFolders] = useState<Folder[]>([]);
 
   const loadFolders = useCallback(async () => {
@@ -21,6 +23,10 @@ function SidebarFolders() {
     loadFolders();
   }, [loadFolders]);
 
+  const handleFolderClick = (folder: Folder) => {
+    navigate(`/${folder.id}`);
+  };
+
   return (
     <div className="sidebar-folders">
       <div className="sidebar-folders__header">
@@ -29,7 +35,11 @@ function SidebarFolders() {
       </div>
       <div className="sidebar-folders__list">
         {folders.map(folder => (
-          <div key={folder.id} className="sidebar-folders__item">
+          <div 
+            key={folder.id} 
+            className="sidebar-folders__item"
+            onClick={() => handleFolderClick(folder)}
+          >
             <span className="sidebar-folders__icon">📁</span>
             <span className="sidebar-folders__name">{folder.name}</span>
           </div>

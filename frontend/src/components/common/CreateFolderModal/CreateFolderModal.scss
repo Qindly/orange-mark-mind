@@ -1,0 +1,78 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.create-folder-modal {
+  &__section {
+    margin-bottom: $spacing-lg;
+  }
+  
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-text;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__input-group {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-md;
+    transition: border-color $transition-fast;
+    
+    &:focus-within {
+      border-color: $color-primary;
+    }
+  }
+  
+  &__icon {
+    font-size: 20px;
+    color: $color-primary;
+  }
+  
+  &__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: $font-size-sm;
+    background: transparent;
+    
+    &::placeholder {
+      color: $color-text-light;
+    }
+  }
+  
+  &__error {
+    color: $color-error;
+    font-size: $font-size-xs;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__textarea {
+    width: 100%;
+    padding: $spacing-md;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+    transition: border-color $transition-fast;
+    
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+    }
+    
+    &::placeholder {
+      color: $color-text-light;
+    }
+  }
+  
+  &__submit {
+    margin-top: $spacing-md;
+  }
+}

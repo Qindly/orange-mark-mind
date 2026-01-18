@@ -1,20 +1,21 @@
-import type { Document, Folder, ApiResponse, PaginatedResponse } from '../types';
+import type { Document, Folder, ApiResponse, PaginatedResponse } from '@/types';
 import { 
   getRecentDocuments, 
   getFavoriteDocuments, 
   getDeletedDocuments,
   getFolderList,
-  getDocumentsByFolderId 
-} from '../mock/documents';
+  getDocumentsByFolderId,
+  getFolderById,
+  getDocumentById
+} from '@/mock/documents';
 
 // TODO: 后续替换为真实 API 调用
-// import request from '../utils/request';
+// import request from '@/utils/request';
 
 /**
  * 获取最近文档列表
  */
 export const fetchRecentDocuments = (): Promise<ApiResponse<Document[]>> => {
-  // Mock 实现
   return Promise.resolve({
     code: 0,
     message: 'success',
@@ -58,7 +59,7 @@ export const fetchFolders = (): Promise<ApiResponse<Folder[]>> => {
 /**
  * 获取某文件夹下的文档
  */
-export const fetchDocumentsByFolder = (folderId: number): Promise<ApiResponse<Document[]>> => {
+export const fetchDocumentsByFolder = (folderId: string): Promise<ApiResponse<Document[]>> => {
   return Promise.resolve({
     code: 0,
     message: 'success',
@@ -67,11 +68,35 @@ export const fetchDocumentsByFolder = (folderId: number): Promise<ApiResponse<Do
 };
 
 /**
+ * 获取单个文件夹信息
+ */
+export const fetchFolderById = (folderId: string): Promise<ApiResponse<Folder | null>> => {
+  const folder = getFolderById(folderId);
+  return Promise.resolve({
+    code: folder ? 0 : 404,
+    message: folder ? 'success' : 'Folder not found',
+    data: folder || null,
+  });
+};
+
+/**
+ * 获取单个文档信息
+ */
+export const fetchDocumentById = (docId: string): Promise<ApiResponse<Document | null>> => {
+  const doc = getDocumentById(docId);
+  return Promise.resolve({
+    code: doc ? 0 : 404,
+    message: doc ? 'success' : 'Document not found',
+    data: doc || null,
+  });
+};
+
+/**
  * 创建文档 (Mock)
  */
-export const createDocument = (data: { title: string; folder_id?: number }): Promise<ApiResponse<Document>> => {
+export const createDocument = (data: { title: string; folder_id: string }): Promise<ApiResponse<Document>> => {
   const newDoc: Document = {
-    id: Date.now(),
+    id: `doc-${Date.now()}`,
     user_id: 1,
     folder_id: data.folder_id,
     title: data.title,
@@ -92,12 +117,13 @@ export const createDocument = (data: { title: string; folder_id?: number }): Pro
 /**
  * 创建文件夹 (Mock)
  */
-export const createFolder = (data: { name: string; parent_id?: number }): Promise<ApiResponse<Folder>> => {
+export const createFolder = (data: { name: string; description?: string }): Promise<ApiResponse<Folder>> => {
   const newFolder: Folder = {
-    id: Date.now(),
+    id: `kb-${Date.now()}`,
     user_id: 1,
-    parent_id: data.parent_id,
+    parent_id: undefined,
     name: data.name,
+    description: data.description,
     sort_order: 0,
     document_count: 0,
     created_at: new Date().toISOString(),

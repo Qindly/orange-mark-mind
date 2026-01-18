@@ -1,7 +1,7 @@
 import './DocumentItem.scss';
 
 interface DocumentItemProps {
-  id: number;
+  id: string;
   title: string;
   folderName?: string;
   date: string;

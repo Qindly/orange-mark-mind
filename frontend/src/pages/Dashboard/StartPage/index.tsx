@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ActionCard, DocumentItem, TabGroup, PageHeader } from '@/components';
+import { useNavigate } from 'react-router-dom';
+import { ActionCard, DocumentItem, TabGroup, PageHeader, CreateDocumentModal, CreateFolderModal } from '@/components';
 import { fetchRecentDocuments } from '@/api/documents';
 import type { Document } from '@/types';
 import './StartPage.scss';
@@ -12,9 +13,12 @@ const documentTabs = [
 ];
 
 function StartPage() {
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('edited');
+  const [isDocModalOpen, setIsDocModalOpen] = useState(false);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
   useEffect(() => {
     loadDocuments();
@@ -43,6 +47,32 @@ function StartPage() {
     });
   };
 
+  const handleNewDocument = () => {
+    setIsDocModalOpen(true);
+  };
+
+  const handleNewFolder = () => {
+    setIsFolderModalOpen(true);
+  };
+
+  const handleTemplates = () => {
+    navigate('/dashboard/templates');
+  };
+
+  const handleDocumentConfirm = (folderId: string) => {
+    // 创建文档后跳转到知识库
+    navigate(`/${folderId}`);
+  };
+
+  const handleFolderConfirm = (name: string, description: string) => {
+    console.log('Create folder:', name, description);
+    // TODO: 调用 API 创建文件夹
+  };
+
+  const handleDocumentClick = (doc: Document) => {
+    navigate(`/${doc.folder_id}/${doc.id}`);
+  };
+
   return (
     <div className="start-page">
       <PageHeader title="开始" />
@@ -53,16 +83,19 @@ function StartPage() {
           icon="📄" 
           title="新建文档" 
           description="文档、表格、画板、数据表" 
+          onClick={handleNewDocument}
         />
         <ActionCard 
           icon="📚" 
           title="新建知识库" 
           description="使用知识库整理知识" 
+          onClick={handleNewFolder}
         />
         <ActionCard 
           icon="🎨" 
           title="模板中心" 
           description="从模板中获取灵感" 
+          onClick={handleTemplates}
         />
       </section>
 
@@ -88,11 +121,26 @@ function StartPage() {
                 title={doc.title}
                 folderName={doc.folder_name}
                 date={formatDate(doc.updated_at)}
+                onClick={() => handleDocumentClick(doc)}
               />
             ))
           )}
         </div>
       </section>
+
+      {/* 弹窗 */}
+      <CreateDocumentModal
+        isOpen={isDocModalOpen}
+        onClose={() => setIsDocModalOpen(false)}
+        onCreateFolder={handleNewFolder}
+        onConfirm={handleDocumentConfirm}
+      />
+
+      <CreateFolderModal
+        isOpen={isFolderModalOpen}
+        onClose={() => setIsFolderModalOpen(false)}
+        onConfirm={handleFolderConfirm}
+      />
     </div>
   );
 }

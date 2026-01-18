@@ -1,0 +1,88 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.create-document-modal {
+  &__subtitle {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__loading {
+    text-align: center;
+    padding: $spacing-lg;
+    color: $color-text-light;
+  }
+  
+  &__folders {
+    @include flex-column;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__folder {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-md;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: all $transition-fast;
+    
+    &:hover {
+      border-color: $color-primary;
+      background: $color-primary-light;
+    }
+    
+    &.selected {
+      border-color: $color-primary;
+      background: $color-primary-light;
+    }
+  }
+  
+  &__folder-icon {
+    font-size: 20px;
+    color: $color-primary;
+  }
+  
+  &__folder-name {
+    flex: 1;
+    font-size: $font-size-sm;
+    color: $color-text;
+  }
+  
+  &__folder-lock {
+    font-size: 14px;
+    opacity: 0.5;
+  }
+  
+  &__add-folder {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    width: 100%;
+    padding: $spacing-md;
+    background: transparent;
+    border: 1px dashed $color-border;
+    border-radius: $radius-md;
+    color: $color-text-secondary;
+    font-size: $font-size-sm;
+    cursor: pointer;
+    transition: all $transition-fast;
+    margin-bottom: $spacing-lg;
+    
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+    
+    span {
+      font-size: 18px;
+    }
+  }
+  
+  &__actions {
+    margin-top: $spacing-md;
+  }
+}

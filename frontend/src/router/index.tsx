@@ -13,6 +13,10 @@ import TrashPage from '@/pages/Dashboard/TrashPage';
 import TemplatesPage from '@/pages/Dashboard/TemplatesPage';
 import SettingsPage from '@/pages/Dashboard/SettingsPage';
 
+// Knowledge Base Pages
+import KnowledgeBase from '@/pages/KnowledgeBase';
+import DocumentView from '@/pages/KnowledgeBase/DocumentView';
+
 // 路由守卫组件
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('access_token');
@@ -21,6 +25,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
   return <>{children}</>;
 };
+
+// 404 页面
+const NotFound = () => (
+  <div style={{ 
+    display: 'flex', 
+    flexDirection: 'column',
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    height: '100vh',
+    gap: '16px'
+  }}>
+    <h1 style={{ fontSize: '48px', margin: 0 }}>404</h1>
+    <p style={{ color: '#666' }}>页面不存在</p>
+    <a href="/dashboard" style={{ color: '#F5A623' }}>返回首页</a>
+  </div>
+);
 
 const router = createBrowserRouter([
   {
@@ -68,6 +88,27 @@ const router = createBrowserRouter([
         element: <SettingsPage />,
       },
     ],
+  },
+  // 知识库路由 - 直接使用完整 ID
+  // URL: /kb-1 或 /kb-1/doc-1
+  {
+    path: '/:folderId',
+    element: (
+      <ProtectedRoute>
+        <KnowledgeBase />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        path: ':docId',
+        element: <DocumentView />,
+      },
+    ],
+  },
+  // 404 兜底路由
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ]);
 

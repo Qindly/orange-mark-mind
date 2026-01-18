@@ -1,10 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { SidebarSearch, SidebarMenu, SidebarFolders, SidebarFooter } from './components';
+import { CreateDocumentModal, CreateFolderModal } from '@/components';
 import './Sidebar.scss';
 
 function Sidebar() {
   const [sidebarWidth, setSidebarWidth] = useState(220);
   const [isResizing, setIsResizing] = useState(false);
+  const [isDocModalOpen, setIsDocModalOpen] = useState(false);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
 
   // 拖拽调整宽度
@@ -38,30 +41,58 @@ function Sidebar() {
   }, [isResizing, resize, stopResizing]);
 
   const handleNewDocument = () => {
-    // TODO: 打开新建文档弹窗
-    console.log('New document');
+    setIsDocModalOpen(true);
+  };
+
+  const handleCreateFolder = () => {
+    setIsFolderModalOpen(true);
+  };
+
+  const handleDocumentConfirm = (folderId: number) => {
+    // TODO: 创建文档并跳转到编辑页
+    console.log('Create document in folder:', folderId);
+  };
+
+  const handleFolderConfirm = (name: string, description: string) => {
+    // TODO: 调用 API 创建文件夹
+    console.log('Create folder:', name, description);
   };
 
   return (
-    <aside 
-      ref={sidebarRef}
-      className={`sidebar ${isResizing ? 'sidebar--resizing' : ''}`}
-      style={{ width: sidebarWidth }}
-    >
-      <div className="sidebar__top">
-        <SidebarSearch onNewDocument={handleNewDocument} />
-        <SidebarMenu />
-      </div>
+    <>
+      <aside 
+        ref={sidebarRef}
+        className={`sidebar ${isResizing ? 'sidebar--resizing' : ''}`}
+        style={{ width: sidebarWidth }}
+      >
+        <div className="sidebar__top">
+          <SidebarSearch onNewDocument={handleNewDocument} />
+          <SidebarMenu />
+        </div>
 
-      <SidebarFolders />
+        <SidebarFolders />
 
-      <SidebarFooter />
+        <SidebarFooter />
 
-      <div 
-        className="sidebar__resizer"
-        onMouseDown={startResizing}
+        <div 
+          className="sidebar__resizer"
+          onMouseDown={startResizing}
+        />
+      </aside>
+
+      <CreateDocumentModal
+        isOpen={isDocModalOpen}
+        onClose={() => setIsDocModalOpen(false)}
+        onCreateFolder={handleCreateFolder}
+        onConfirm={handleDocumentConfirm}
       />
-    </aside>
+
+      <CreateFolderModal
+        isOpen={isFolderModalOpen}
+        onClose={() => setIsFolderModalOpen(false)}
+        onConfirm={handleFolderConfirm}
+      />
+    </>
   );
 }
 

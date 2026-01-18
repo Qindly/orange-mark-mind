@@ -48,12 +48,15 @@ func main() {
 
 	// 初始化 Repository
 	userRepo := repository.NewUserRepository(db)
+	folderRepo := repository.NewFolderRepository(db)
 
 	// 初始化 Service
 	authService := service.NewAuthService(userRepo, redisClient, cfg)
+	folderService := service.NewFolderService(folderRepo)
 
 	// 初始化 Handler
 	authHandler := handler.NewAuthHandler(authService)
+	folderHandler := handler.NewFolderHandler(folderService)
 
 	// ========================================================================
 	// 路由配置
@@ -83,13 +86,18 @@ func main() {
 			authProtected.POST("/logout-all", authHandler.LogoutAll)
 		}
 
-		// TODO: 其他路由组（需要认证）
-		// users := v1.Group("/users")
-		// users.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
-		// {
-		//     // 用户管理路由
-		// }
+		// 知识库路由（需要认证）
+		folders := v1.Group("/folders")
+		folders.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		{
+			folders.GET("", folderHandler.GetList)
+			folders.POST("", folderHandler.Create)
+			folders.GET("/:id", folderHandler.GetByID)
+			folders.PUT("/:id", folderHandler.Update)
+			folders.DELETE("/:id", folderHandler.Delete)
+		}
 
+		// TODO: 其他路由组（需要认证）
 		// documents := v1.Group("/documents")
 		// documents.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
 		// {

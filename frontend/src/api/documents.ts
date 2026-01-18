@@ -1,92 +1,98 @@
-import type { Document, Folder, ApiResponse, PaginatedResponse } from '@/types';
-import { 
-  getRecentDocuments, 
-  getFavoriteDocuments, 
+import type { Document, Folder, ApiResponse, PaginatedResponse } from "@/types";
+import {
+  getRecentDocuments,
+  getFavoriteDocuments,
   getDeletedDocuments,
-  getFolderList,
   getDocumentsByFolderId,
-  getFolderById,
-  getDocumentById
-} from '@/mock/documents';
+  getDocumentById,
+} from "@/mock/documents";
 
-// TODO: 后续替换为真实 API 调用
-// import request from '@/utils/request';
+// 真实 API
+import {
+  fetchFolders as fetchFoldersReal,
+  fetchFolderById as fetchFolderByIdReal,
+  createFolder as createFolderReal,
+} from "./folders";
+
+// ============================================================================
+// Folders - 使用真实 API
+// ============================================================================
 
 /**
- * 获取最近文档列表
+ * 获取文件夹列表（真实 API）
+ */
+export const fetchFolders = fetchFoldersReal;
+
+/**
+ * 获取单个文件夹信息（真实 API）
+ */
+export const fetchFolderById = fetchFolderByIdReal;
+
+/**
+ * 创建文件夹（真实 API）
+ */
+export const createFolder = createFolderReal;
+
+// ============================================================================
+// Documents - 仍使用 Mock（待后端实现）
+// ============================================================================
+
+/**
+ * 获取最近文档列表 (Mock)
  */
 export const fetchRecentDocuments = (): Promise<ApiResponse<Document[]>> => {
   return Promise.resolve({
     code: 0,
-    message: 'success',
+    message: "success",
     data: getRecentDocuments(),
   });
 };
 
 /**
- * 获取收藏文档列表
+ * 获取收藏文档列表 (Mock)
  */
 export const fetchFavoriteDocuments = (): Promise<ApiResponse<Document[]>> => {
   return Promise.resolve({
     code: 0,
-    message: 'success',
+    message: "success",
     data: getFavoriteDocuments(),
   });
 };
 
 /**
- * 获取回收站文档列表
+ * 获取回收站文档列表 (Mock)
  */
 export const fetchDeletedDocuments = (): Promise<ApiResponse<Document[]>> => {
   return Promise.resolve({
     code: 0,
-    message: 'success',
+    message: "success",
     data: getDeletedDocuments(),
   });
 };
 
 /**
- * 获取文件夹列表
+ * 获取某文件夹下的文档 (Mock)
  */
-export const fetchFolders = (): Promise<ApiResponse<Folder[]>> => {
+export const fetchDocumentsByFolder = (
+  folderId: string,
+): Promise<ApiResponse<Document[]>> => {
   return Promise.resolve({
     code: 0,
-    message: 'success',
-    data: getFolderList(),
-  });
-};
-
-/**
- * 获取某文件夹下的文档
- */
-export const fetchDocumentsByFolder = (folderId: string): Promise<ApiResponse<Document[]>> => {
-  return Promise.resolve({
-    code: 0,
-    message: 'success',
+    message: "success",
     data: getDocumentsByFolderId(folderId),
   });
 };
 
 /**
- * 获取单个文件夹信息
+ * 获取单个文档信息 (Mock)
  */
-export const fetchFolderById = (folderId: string): Promise<ApiResponse<Folder | null>> => {
-  const folder = getFolderById(folderId);
-  return Promise.resolve({
-    code: folder ? 0 : 404,
-    message: folder ? 'success' : 'Folder not found',
-    data: folder || null,
-  });
-};
-
-/**
- * 获取单个文档信息
- */
-export const fetchDocumentById = (docId: string): Promise<ApiResponse<Document | null>> => {
+export const fetchDocumentById = (
+  docId: string,
+): Promise<ApiResponse<Document | null>> => {
   const doc = getDocumentById(docId);
   return Promise.resolve({
     code: doc ? 0 : 404,
-    message: doc ? 'success' : 'Document not found',
+    message: doc ? "success" : "Document not found",
     data: doc || null,
   });
 };
@@ -94,13 +100,16 @@ export const fetchDocumentById = (docId: string): Promise<ApiResponse<Document |
 /**
  * 创建文档 (Mock)
  */
-export const createDocument = (data: { title: string; folder_id: string }): Promise<ApiResponse<Document>> => {
+export const createDocument = (data: {
+  title: string;
+  folder_id: string;
+}): Promise<ApiResponse<Document>> => {
   const newDoc: Document = {
     id: `doc-${Date.now()}`,
     user_id: 1,
     folder_id: data.folder_id,
     title: data.title,
-    content: '',
+    content: "",
     is_favorited: false,
     is_deleted: false,
     sort_order: 0,
@@ -109,30 +118,8 @@ export const createDocument = (data: { title: string; folder_id: string }): Prom
   };
   return Promise.resolve({
     code: 0,
-    message: 'success',
+    message: "success",
     data: newDoc,
-  });
-};
-
-/**
- * 创建文件夹 (Mock)
- */
-export const createFolder = (data: { name: string; description?: string }): Promise<ApiResponse<Folder>> => {
-  const newFolder: Folder = {
-    id: `kb-${Date.now()}`,
-    user_id: 1,
-    parent_id: undefined,
-    name: data.name,
-    description: data.description,
-    sort_order: 0,
-    document_count: 0,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-  return Promise.resolve({
-    code: 0,
-    message: 'success',
-    data: newFolder,
   });
 };
 

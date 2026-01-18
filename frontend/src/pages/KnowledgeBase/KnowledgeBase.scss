@@ -1,0 +1,336 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.kb-loading,
+.kb-error {
+  @include flex-center;
+  height: 100vh;
+  color: $color-text-light;
+  font-size: $font-size-lg;
+}
+
+.knowledge-base {
+  display: flex;
+  height: 100vh;
+  background: $color-bg-gray;
+}
+
+// 面包屑导航
+.kb-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-xs;
+  color: $color-primary;
+  cursor: pointer;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+  
+  &__icon {
+    font-size: 14px;
+  }
+  
+  &__arrow {
+    color: $color-text-light;
+  }
+  
+  &__text {
+    @include text-ellipsis;
+  }
+}
+
+// 知识库标题
+.kb-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  
+  &__icon {
+    font-size: 20px;
+  }
+  
+  &__title {
+    flex: 1;
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $color-text;
+    @include text-ellipsis;
+  }
+  
+  &__more {
+    padding: $spacing-xs;
+    background: transparent;
+    border: none;
+    color: $color-text-light;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    
+    &:hover {
+      background: $color-bg-gray;
+    }
+  }
+}
+
+// 搜索和添加
+.kb-search {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  
+  &__input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: $spacing-xs $spacing-sm;
+    background: $color-bg-gray;
+    border-radius: $radius-md;
+  }
+  
+  &__icon {
+    font-size: 14px;
+    color: $color-text-light;
+  }
+  
+  &__input {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: $font-size-sm;
+    outline: none;
+    
+    &::placeholder {
+      color: $color-text-light;
+    }
+  }
+  
+  &__shortcut {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+    background: $color-bg-white;
+    padding: 2px 4px;
+    border-radius: $radius-sm;
+    border: 1px solid $color-border-light;
+  }
+  
+  &__add {
+    width: 28px;
+    height: 28px;
+    @include flex-center;
+    background: transparent;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: 18px;
+    color: $color-text-secondary;
+    cursor: pointer;
+    transition: all $transition-fast;
+    
+    &:hover {
+      background: $color-primary;
+      border-color: $color-primary;
+      color: white;
+    }
+  }
+}
+
+// 导航项
+.kb-nav-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: all $transition-fast;
+  
+  &:hover {
+    background: $color-bg-gray;
+  }
+  
+  &.active {
+    background: $color-primary-light;
+    color: $color-primary;
+  }
+  
+  &__icon {
+    font-size: 16px;
+  }
+}
+
+// 目录
+.kb-directory {
+  flex: 1;
+  overflow-y: auto;
+  
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+  
+  &__icon {
+    font-size: 14px;
+  }
+  
+  &__title {
+    flex: 1;
+  }
+  
+  &__toggle {
+    padding: $spacing-xs;
+    background: transparent;
+    border: none;
+    color: $color-text-light;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    
+    &:hover {
+      background: $color-bg-gray;
+    }
+  }
+  
+  &__list {
+    padding-left: $spacing-md;
+  }
+  
+  &__item {
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all $transition-fast;
+    @include text-ellipsis;
+    
+    &:hover {
+      background: $color-bg-gray;
+      color: $color-text;
+    }
+    
+    &.active {
+      border-left-color: $color-primary;
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+  }
+}
+
+// 右侧内容区
+.kb-content {
+  flex: 1;
+  overflow-y: auto;
+  background: $color-bg-white;
+}
+
+// 欢迎页
+.kb-welcome {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  
+  &__header {
+    @include flex-between;
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $color-border-light;
+  }
+  
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+  
+  &__icon {
+    font-size: 32px;
+  }
+  
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: 600;
+    color: $color-text;
+  }
+  
+  &__stats {
+    display: flex;
+    gap: $spacing-lg;
+    margin-top: $spacing-sm;
+    font-size: $font-size-sm;
+    color: $color-text-light;
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    
+    .btn {
+      padding: $spacing-sm $spacing-md;
+      font-size: $font-size-sm;
+    }
+  }
+  
+  &__intro {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    margin: $spacing-xl 0;
+    padding: $spacing-lg;
+    background: $color-primary-light;
+    border-radius: $radius-md;
+  }
+  
+  &__intro-icon {
+    font-size: 24px;
+  }
+  
+  &__intro-text {
+    h3 {
+      font-size: $font-size-base;
+      font-weight: 600;
+      color: $color-text;
+      margin-bottom: $spacing-xs;
+    }
+    
+    p {
+      font-size: $font-size-sm;
+      color: $color-primary;
+    }
+  }
+  
+  &__docs {
+    margin-top: $spacing-lg;
+  }
+  
+  &__doc-item {
+    @include flex-between;
+    padding: $spacing-md 0;
+    border-bottom: 1px solid $color-border-light;
+    cursor: pointer;
+    transition: background $transition-fast;
+    
+    &:hover {
+      background: $color-bg-gray;
+      margin: 0 (-$spacing-md);
+      padding: $spacing-md;
+    }
+  }
+  
+  &__doc-title {
+    font-size: $font-size-sm;
+    color: $color-text;
+  }
+  
+  &__doc-date {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+  }
+}

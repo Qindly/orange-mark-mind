@@ -1,0 +1,33 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.empty-state {
+  @include flex-column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-2xl;
+  text-align: center;
+  
+  &__icon {
+    font-size: 48px;
+    margin-bottom: $spacing-md;
+    opacity: 0.6;
+  }
+  
+  &__title {
+    font-size: $font-size-lg;
+    font-weight: 500;
+    color: $color-text;
+    margin-bottom: $spacing-xs;
+  }
+  
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    max-width: 300px;
+  }
+  
+  &__action {
+    margin-top: $spacing-lg;
+  }
+}

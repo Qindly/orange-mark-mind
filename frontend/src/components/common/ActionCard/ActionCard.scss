@@ -1,0 +1,47 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-white;
+  border: 1px solid $color-border-light;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all $transition-fast;
+  
+  &:hover {
+    border-color: $color-primary;
+    box-shadow: $shadow-sm;
+  }
+  
+  &__icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    @include flex-center;
+    background: $color-bg-gray;
+    border-radius: $radius-md;
+    flex-shrink: 0;
+  }
+  
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-text;
+    margin-bottom: 2px;
+  }
+  
+  &__desc {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+    @include text-ellipsis;
+  }
+}

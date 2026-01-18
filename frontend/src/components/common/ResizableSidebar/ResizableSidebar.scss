@@ -1,23 +1,23 @@
-@use '../../styles/variables' as *;
+@use '../../../styles/variables' as *;
 
-.sidebar {
-  min-width: 180px;
-  max-width: 400px;
+.resizable-sidebar {
+  position: relative;
   height: 100%;
   background: $color-bg-white;
   border-right: 1px solid $color-border-light;
   display: flex;
   flex-direction: column;
-  position: relative;
   flex-shrink: 0;
-  overflow: hidden;
   
   &--resizing {
     user-select: none;
   }
   
-  &__top {
-    flex-shrink: 0;
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
   
   &__resizer {
@@ -29,8 +29,10 @@
     cursor: col-resize;
     background: transparent;
     transition: background $transition-fast;
+    z-index: 10;
     
-    &:hover {
+    &:hover,
+    .resizable-sidebar--resizing & {
       background: $color-primary;
     }
   }

@@ -2,17 +2,53 @@
 
 > `/api/v1/documents` - 文档管理相关接口
 
+## ID 格式规范
+
+| 实体   | ID 格式        | 示例          |
+| :----- | :------------- | :------------ |
+| 文档   | `doc-{number}` | `doc-1`       |
+| 知识库 | `kb-{number}`  | `kb-1`        |
+
+> **重要**: 所有 ID 均为字符串类型，前端路由直接使用完整 ID，例如 `/{folderId}/{docId}` → `/kb-1/doc-1`
+
+---
+
 ## 概览
 
-| 接口                | 方法   | 认证 | 说明           |
-| :------------------ | :----- | :--: | :------------- |
-| `/documents`        | GET    |  ✅  | 获取文档列表   |
-| `/documents`        | POST   |  ✅  | 创建文档       |
-| `/documents/:id`    | GET    |  ✅  | 获取文档详情   |
-| `/documents/:id`    | PUT    |  ✅  | 更新文档       |
-| `/documents/:id`    | DELETE |  ✅  | 删除文档       |
-| `/documents/recent` | GET    |  ✅  | 获取最近文档   |
-| `/documents/trash`  | GET    |  ✅  | 获取回收站文档 |
+| 接口                     | 方法   | 认证 | 说明           |
+| :----------------------- | :----- | :--: | :------------- |
+| `/documents`             | GET    |  ✅  | 获取文档列表   |
+| `/documents`             | POST   |  ✅  | 创建文档       |
+| `/documents/:id`         | GET    |  ✅  | 获取文档详情   |
+| `/documents/:id`         | PUT    |  ✅  | 更新文档       |
+| `/documents/:id`         | DELETE |  ✅  | 删除文档       |
+| `/documents/recent`      | GET    |  ✅  | 获取最近文档   |
+| `/documents/favorites`   | GET    |  ✅  | 获取收藏文档   |
+| `/documents/trash`       | GET    |  ✅  | 获取回收站文档 |
+| `/documents/:id/restore` | POST   |  ✅  | 恢复文档       |
+
+---
+
+## 数据模型
+
+### Document
+
+```typescript
+interface Document {
+  id: string;           // 格式: "doc-{number}"
+  user_id: number;
+  folder_id: string;    // 格式: "kb-{number}"
+  folder_name?: string; // 所属知识库名称
+  title: string;
+  content?: string;     // Markdown 内容
+  is_favorited: boolean;
+  is_deleted: boolean;
+  deleted_at?: string;  // ISO 8601 格式
+  sort_order: number;
+  created_at: string;   // ISO 8601 格式
+  updated_at: string;   // ISO 8601 格式
+}
+```
 
 ---
 
@@ -24,7 +60,7 @@
 
 | 参数         | 类型    | 必填 | 说明                                          |
 | :----------- | :------ | :--: | :-------------------------------------------- |
-| folder_id    | number  |  ❌  | 文件夹 ID，不传则获取所有文档                 |
+| folder_id    | string  |  ❌  | 知识库 ID (kb-{n})，不传则获取所有文档        |
 | is_favorited | boolean |  ❌  | 是否只获取收藏文档                            |
 | is_deleted   | boolean |  ❌  | 是否获取回收站文档，默认 false                |
 | search       | string  |  ❌  | 搜索关键词                                    |
@@ -44,9 +80,9 @@
   "data": {
     "items": [
       {
-        "id": 1,
+        "id": "doc-1",
         "user_id": 1,
-        "folder_id": 1,
+        "folder_id": "kb-1",
         "folder_name": "前端知识库",
         "title": "JavaScript 基础",
         "is_favorited": false,
@@ -76,7 +112,7 @@
 {
   "title": "新文档",
   "content": "# 标题\n\n内容...",
-  "folder_id": 1
+  "folder_id": "kb-1"
 }
 ```
 
@@ -86,7 +122,7 @@
 | :-------- | :----- | :--: | :--------------------------- |
 | title     | string |  ✅  | 文档标题，1-200 字符         |
 | content   | string |  ❌  | Markdown 内容                |
-| folder_id | number |  ❌  | 所属文件夹 ID，不传则为未分类 |
+| folder_id | string |  ✅  | 所属知识库 ID (kb-{n})       |
 
 ### 响应
 
@@ -97,9 +133,9 @@
   "code": 0,
   "message": "success",
   "data": {
-    "id": 10,
+    "id": "doc-10",
     "user_id": 1,
-    "folder_id": 1,
+    "folder_id": "kb-1",
     "title": "新文档",
     "content": "# 标题\n\n内容...",
     "is_favorited": false,
@@ -117,6 +153,8 @@
 
 获取单个文档详情（含完整内容）。
 
+> `:id` 格式为 `doc-{number}`，例如 `doc-1`
+
 ### 响应
 
 **成功 (200)**
@@ -126,9 +164,9 @@
   "code": 0,
   "message": "success",
   "data": {
-    "id": 1,
+    "id": "doc-1",
     "user_id": 1,
-    "folder_id": 1,
+    "folder_id": "kb-1",
     "folder_name": "前端知识库",
     "title": "JavaScript 基础",
     "content": "# JavaScript 基础\n\n## 变量声明\n\n...",
@@ -162,19 +200,19 @@
 {
   "title": "更新后的标题",
   "content": "更新后的内容...",
-  "folder_id": 2,
+  "folder_id": "kb-2",
   "is_favorited": true
 }
 ```
 
 ### 参数说明
 
-| 参数         | 类型    | 必填 | 说明         |
-| :----------- | :------ | :--: | :----------- |
-| title        | string  |  ❌  | 文档标题     |
-| content      | string  |  ❌  | Markdown 内容 |
-| folder_id    | number  |  ❌  | 所属文件夹    |
-| is_favorited | boolean |  ❌  | 收藏状态     |
+| 参数         | 类型    | 必填 | 说明               |
+| :----------- | :------ | :--: | :----------------- |
+| title        | string  |  ❌  | 文档标题           |
+| content      | string  |  ❌  | Markdown 内容      |
+| folder_id    | string  |  ❌  | 所属知识库 (kb-{n}) |
+| is_favorited | boolean |  ❌  | 收藏状态           |
 
 ### 响应
 
@@ -185,7 +223,7 @@
   "code": 0,
   "message": "success",
   "data": {
-    "id": 1,
+    "id": "doc-1",
     "title": "更新后的标题",
     "updated_at": "2026-01-18T00:00:00Z"
   }
@@ -237,13 +275,23 @@
 
 ---
 
+## GET /api/v1/documents/favorites
+
+获取收藏的文档列表。
+
+### 响应
+
+同 GET /api/v1/documents 格式。
+
+---
+
 ## GET /api/v1/documents/trash
 
 获取回收站中的文档。
 
 ### 响应
 
-同 GET /api/v1/documents 格式。
+同 GET /api/v1/documents 格式，文档包含 `deleted_at` 字段。
 
 ---
 

@@ -1,0 +1,20 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.favorites-page {
+  &__content {
+    margin-top: $spacing-lg;
+  }
+  
+  &__list {
+    @include flex-column;
+    gap: 2px;
+  }
+  
+  &__loading {
+    padding: $spacing-2xl;
+    text-align: center;
+    color: $color-text-light;
+    font-size: $font-size-sm;
+  }
+}

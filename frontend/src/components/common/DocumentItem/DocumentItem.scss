@@ -1,0 +1,51 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.document-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: background $transition-fast;
+  
+  &:hover {
+    background: $color-bg-gray;
+  }
+  
+  &__icon {
+    width: 32px;
+    height: 32px;
+    @include flex-center;
+    background: $color-bg-gray;
+    border-radius: $radius-sm;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-text;
+    margin-bottom: 2px;
+    @include text-ellipsis;
+  }
+  
+  &__folder {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+  }
+  
+  &__date {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

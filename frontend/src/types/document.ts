@@ -1,9 +1,9 @@
 // 文档相关类型定义
 
 export interface Document {
-  id: number;
+  id: string;  // 使用 doc-{number} 格式
   user_id: number;
-  folder_id?: number;
+  folder_id: string;  // 使用 kb-{number} 格式
   folder_name?: string;
   title: string;
   content?: string;
@@ -16,10 +16,11 @@ export interface Document {
 }
 
 export interface Folder {
-  id: number;
+  id: string;  // 使用 kb-{number} 格式
   user_id: number;
-  parent_id?: number;
+  parent_id?: string;
   name: string;
+  description?: string;
   sort_order: number;
   children?: Folder[];
   document_count?: number;

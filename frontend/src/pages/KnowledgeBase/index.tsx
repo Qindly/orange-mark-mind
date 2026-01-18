@@ -1,19 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useParams, Outlet, useNavigate } from 'react-router-dom';
-import { ResizableSidebar, CreateDocumentModal } from '@/components';
-import { fetchFolderById, fetchDocumentsByFolder } from '@/api/documents';
-import type { Folder, Document } from '@/types';
-import './KnowledgeBase.scss';
+import { useState, useEffect, useCallback } from "react";
+import { useParams, Outlet, useNavigate } from "react-router-dom";
+import { ResizableSidebar, CreateDocumentModal } from "@/components";
+import { fetchFolderById } from "@/api/folders";
+import { fetchDocumentsByFolder } from "@/api/documents";
+import type { Folder, Document } from "@/types";
+import "./KnowledgeBase.scss";
 
 function KnowledgeBase() {
   const { folderId, docId } = useParams<{ folderId: string; docId?: string }>();
   const navigate = useNavigate();
-  
+
   const [folder, setFolder] = useState<Folder | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDocModalOpen, setIsDocModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadFolderData = useCallback(async () => {
     if (!folderId) return;
@@ -21,7 +22,7 @@ function KnowledgeBase() {
     try {
       const [folderRes, docsRes] = await Promise.all([
         fetchFolderById(folderId),
-        fetchDocumentsByFolder(folderId)
+        fetchDocumentsByFolder(folderId),
       ]);
       if (folderRes.code === 0 && folderRes.data) {
         setFolder(folderRes.data);
@@ -30,7 +31,7 @@ function KnowledgeBase() {
         setDocuments(docsRes.data);
       }
     } catch (error) {
-      console.error('Failed to load folder data:', error);
+      console.error("Failed to load folder data:", error);
     } finally {
       setLoading(false);
     }
@@ -41,7 +42,7 @@ function KnowledgeBase() {
   }, [loadFolderData]);
 
   const handleBackToDashboard = () => {
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
 
   const handleGoHome = () => {
@@ -68,8 +69,8 @@ function KnowledgeBase() {
   const isHomePage = !docId;
 
   // 搜索过滤文档
-  const filteredDocs = documents.filter(doc => 
-    doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredDocs = documents.filter((doc) =>
+    doc.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (loading) {
@@ -102,20 +103,22 @@ function KnowledgeBase() {
         <div className="kb-search">
           <div className="kb-search__input-wrapper">
             <span className="kb-search__icon">🔍</span>
-            <input 
+            <input
               type="text"
               className="kb-search__input"
               placeholder="搜索"
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="kb-search__add" onClick={handleNewDocument}>+</button>
+          <button className="kb-search__add" onClick={handleNewDocument}>
+            +
+          </button>
         </div>
 
         {/* 首页链接 */}
-        <div 
-          className={`kb-nav-item ${isHomePage ? 'active' : ''}`}
+        <div
+          className={`kb-nav-item ${isHomePage ? "active" : ""}`}
           onClick={handleGoHome}
         >
           <span className="kb-nav-item__icon">🏠</span>
@@ -130,10 +133,10 @@ function KnowledgeBase() {
             <button className="kb-directory__toggle">≡</button>
           </div>
           <div className="kb-directory__list">
-            {filteredDocs.map(doc => (
+            {filteredDocs.map((doc) => (
               <div
                 key={doc.id}
-                className={`kb-directory__item ${isDocActive(doc) ? 'active' : ''}`}
+                className={`kb-directory__item ${isDocActive(doc) ? "active" : ""}`}
                 onClick={() => handleDocumentClick(doc)}
               >
                 {doc.title}
@@ -146,7 +149,11 @@ function KnowledgeBase() {
       {/* 右侧内容区 */}
       <main className="kb-content">
         {isHomePage ? (
-          <KBWelcome folder={folder} documents={documents} onDocClick={handleDocumentClick} />
+          <KBWelcome
+            folder={folder}
+            documents={documents}
+            onDocClick={handleDocumentClick}
+          />
         ) : (
           <Outlet />
         )}
@@ -164,12 +171,12 @@ function KnowledgeBase() {
 }
 
 // 知识库欢迎页组件
-function KBWelcome({ 
-  folder, 
+function KBWelcome({
+  folder,
   documents,
-  onDocClick
-}: { 
-  folder: Folder; 
+  onDocClick,
+}: {
+  folder: Folder;
   documents: Document[];
   onDocClick: (doc: Document) => void;
 }) {
@@ -180,12 +187,18 @@ function KBWelcome({
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     const now = new Date();
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const diffDays = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
     if (diffDays === 0) {
-      return `今天 ${date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`;
+      return `今天 ${date.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}`;
     }
-    return date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    return date.toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
   };
 
   return (
@@ -217,14 +230,16 @@ function KBWelcome({
       </section>
 
       <section className="kb-welcome__docs">
-        {documents.map(doc => (
-          <div 
-            key={doc.id} 
+        {documents.map((doc) => (
+          <div
+            key={doc.id}
             className="kb-welcome__doc-item"
             onClick={() => onDocClick(doc)}
           >
             <span className="kb-welcome__doc-title">{doc.title}</span>
-            <span className="kb-welcome__doc-date">{formatDate(doc.updated_at)}</span>
+            <span className="kb-welcome__doc-date">
+              {formatDate(doc.updated_at)}
+            </span>
           </div>
         ))}
       </section>

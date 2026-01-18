@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import Modal from '@/components/common/Modal';
-import { fetchFolders } from '@/api/documents';
-import type { Folder } from '@/types';
-import './CreateDocumentModal.scss';
+import { useState, useEffect } from "react";
+import Modal from "@/components/common/Modal";
+import { fetchFolders } from "@/api/folders";
+import type { Folder } from "@/types";
+import "./CreateDocumentModal.scss";
 
 interface CreateDocumentModalProps {
   isOpen: boolean;
@@ -11,11 +11,11 @@ interface CreateDocumentModalProps {
   onConfirm: (folderId: string) => void;
 }
 
-function CreateDocumentModal({ 
-  isOpen, 
-  onClose, 
+function CreateDocumentModal({
+  isOpen,
+  onClose,
   onCreateFolder,
-  onConfirm 
+  onConfirm,
 }: CreateDocumentModalProps) {
   const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -39,7 +39,7 @@ function CreateDocumentModal({
         }
       }
     } catch (error) {
-      console.error('Failed to load folders:', error);
+      console.error("Failed to load folders:", error);
     } finally {
       setLoading(false);
     }
@@ -61,15 +61,15 @@ function CreateDocumentModal({
     <Modal isOpen={isOpen} onClose={onClose} title="新建文档" width={420}>
       <div className="create-document-modal">
         <p className="create-document-modal__subtitle">选择一个知识库</p>
-        
+
         {loading ? (
           <div className="create-document-modal__loading">加载中...</div>
         ) : (
           <div className="create-document-modal__folders">
-            {folders.map(folder => (
+            {folders.map((folder) => (
               <div
                 key={folder.id}
-                className={`create-document-modal__folder ${selectedFolderId === folder.id ? 'selected' : ''}`}
+                className={`create-document-modal__folder ${selectedFolderId === folder.id ? "selected" : ""}`}
                 onClick={() => setSelectedFolderId(folder.id)}
               >
                 <span className="create-document-modal__folder-icon">📁</span>
@@ -82,7 +82,7 @@ function CreateDocumentModal({
           </div>
         )}
 
-        <button 
+        <button
           className="create-document-modal__add-folder"
           onClick={handleCreateFolder}
         >
@@ -90,7 +90,7 @@ function CreateDocumentModal({
         </button>
 
         <div className="create-document-modal__actions">
-          <button 
+          <button
             className="btn btn-primary btn-block"
             onClick={handleConfirm}
             disabled={selectedFolderId === null}

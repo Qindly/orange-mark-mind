@@ -49,14 +49,17 @@ func main() {
 	// 初始化 Repository
 	userRepo := repository.NewUserRepository(db)
 	folderRepo := repository.NewFolderRepository(db)
+	docRepo := repository.NewDocumentRepository(db)
 
 	// 初始化 Service
 	authService := service.NewAuthService(userRepo, redisClient, cfg)
 	folderService := service.NewFolderService(folderRepo)
+	docService := service.NewDocumentService(docRepo)
 
 	// 初始化 Handler
 	authHandler := handler.NewAuthHandler(authService)
 	folderHandler := handler.NewFolderHandler(folderService)
+	docHandler := handler.NewDocumentHandler(docService)
 
 	// ========================================================================
 	// 路由配置
@@ -97,13 +100,22 @@ func main() {
 			folders.DELETE("/:id", folderHandler.Delete)
 		}
 
-		// TODO: 其他路由组（需要认证）
-		// documents := v1.Group("/documents")
-		// documents.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
-		// {
-		//     // 文档管理路由
-		// }
+		// 文档路由（需要认证）
+		documents := v1.Group("/documents")
+		documents.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		{
+			documents.GET("", docHandler.GetList)
+			documents.POST("", docHandler.Create)
+			documents.GET("/recent", docHandler.GetRecent)
+			documents.GET("/favorites", docHandler.GetFavorites)
+			documents.GET("/trash", docHandler.GetTrash)
+			documents.GET("/:id", docHandler.GetByID)
+			documents.PUT("/:id", docHandler.Update)
+			documents.DELETE("/:id", docHandler.Delete)
+			documents.POST("/:id/restore", docHandler.Restore)
+		}
 
+		// TODO: AI 对话路由
 		// ai := v1.Group("/ai")
 		// ai.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
 		// {

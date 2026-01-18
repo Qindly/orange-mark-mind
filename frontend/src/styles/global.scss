@@ -1,0 +1,126 @@
+// ============================================
+// Orange Mark Mind - 全局样式
+// ============================================
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// 全局重置
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: $font-family;
+  font-size: $font-size-base;
+  color: $color-text;
+  background-color: $color-bg;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: color $transition-fast;
+  
+  &:hover {
+    color: $color-primary-hover;
+  }
+}
+
+// 通用按钮样式
+.btn {
+  @include btn-base;
+  
+  &-primary {
+    background: $color-primary;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: $color-primary-hover;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+  
+  &-outline {
+    background: transparent;
+    color: $color-text;
+    border: 1px solid $color-border;
+    
+    &:hover:not(:disabled) {
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+  }
+  
+  &-block {
+    width: 100%;
+  }
+  
+  &-large {
+    padding: 14px 32px;
+    font-size: $font-size-lg;
+  }
+}
+
+// 输入框样式
+.input {
+  @include input-base;
+}
+
+// 卡片样式
+.card {
+  @include card;
+}
+
+// 容器
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+}
+
+// 表单组
+.form-group {
+  @include flex-column;
+  gap: $spacing-xs;
+  
+  label {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-text;
+  }
+}
+
+// 错误消息
+.error-message {
+  padding: $spacing-sm $spacing-md;
+  background: #FFF2F0;
+  border: 1px solid #FFCCC7;
+  border-radius: $radius-md;
+  color: $color-error;
+  font-size: $font-size-sm;
+}
+
+// 链接样式
+.link {
+  color: $color-primary;
+  font-weight: 500;
+  margin-left: $spacing-xs;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}

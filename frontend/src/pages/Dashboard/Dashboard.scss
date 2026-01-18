@@ -1,0 +1,103 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.dashboard {
+  min-height: 100vh;
+  background: $color-bg;
+  
+  &__header {
+    background: $color-bg-white;
+    border-bottom: 1px solid $color-border-light;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  &__header-content {
+    @include flex-between;
+    height: 64px;
+  }
+  
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-xl;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  &__logo-icon {
+    font-size: 28px;
+  }
+  
+  &__logo-text {
+    @include gradient-text;
+  }
+  
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+  
+  &__user-name {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+  
+  &__main {
+    padding: $spacing-2xl 0;
+  }
+}
+
+.welcome-card {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  
+  h1 {
+    font-size: $font-size-2xl;
+    margin-bottom: $spacing-md;
+    color: $color-text;
+  }
+  
+  > p {
+    color: $color-text-secondary;
+    margin-bottom: $spacing-xl;
+  }
+}
+
+.user-info {
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  text-align: left;
+  
+  h3 {
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-md;
+    color: $color-text;
+  }
+  
+  ul {
+    list-style: none;
+  }
+  
+  li {
+    padding: $spacing-xs 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    border-bottom: 1px solid $color-border-light;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  strong {
+    color: $color-text;
+    display: inline-block;
+    min-width: 80px;
+  }
+}

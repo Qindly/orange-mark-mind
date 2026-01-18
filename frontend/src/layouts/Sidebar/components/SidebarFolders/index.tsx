@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fetchFolders } from '@/api/documents';
-import type { Folder } from '@/types';
-import './SidebarFolders.scss';
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchFolders } from "@/api/folders";
+import type { Folder } from "@/types";
+import "./SidebarFolders.scss";
 
 function SidebarFolders() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ function SidebarFolders() {
         setFolders(res.data);
       }
     } catch (error) {
-      console.error('Failed to load folders:', error);
+      console.error("Failed to load folders:", error);
     }
   }, []);
 
@@ -31,12 +31,14 @@ function SidebarFolders() {
     <div className="sidebar-folders">
       <div className="sidebar-folders__header">
         <span className="sidebar-folders__title">知识库</span>
-        <button className="sidebar-folders__add-btn" title="新建知识库">+</button>
+        <button className="sidebar-folders__add-btn" title="新建知识库">
+          +
+        </button>
       </div>
       <div className="sidebar-folders__list">
-        {folders.map(folder => (
-          <div 
-            key={folder.id} 
+        {folders.map((folder) => (
+          <div
+            key={folder.id}
             className="sidebar-folders__item"
             onClick={() => handleFolderClick(folder)}
           >

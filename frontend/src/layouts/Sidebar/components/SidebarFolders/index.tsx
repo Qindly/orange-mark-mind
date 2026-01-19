@@ -97,7 +97,6 @@ function SidebarFolders({ onAddFolder, refreshTrigger }: SidebarFoldersProps) {
               className="sidebar-folders__item"
               onClick={() => handleFolderClick(folder)}
             >
-              <span className="sidebar-folders__icon">📁</span>
               <span className="sidebar-folders__name">{folder.name}</span>
               <button
                 className="sidebar-folders__more"

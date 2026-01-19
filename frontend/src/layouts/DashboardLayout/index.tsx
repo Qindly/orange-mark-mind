@@ -101,21 +101,21 @@ function DashboardLayout() {
                         className="dashboard-layout__dropdown-item"
                         onClick={handleAdminPanel}
                       >
-                        🛠️ 管理面板
+                        管理面板
                       </button>
                     )}
                     <button
                       className="dashboard-layout__dropdown-item"
                       onClick={handleSettings}
                     >
-                      ⚙️ 设置
+                      设置
                     </button>
                     <button
                       className="dashboard-layout__dropdown-item dashboard-layout__dropdown-item--danger"
                       onClick={handleLogout}
                       disabled={loading}
                     >
-                      {loading ? '退出中...' : '🚪 退出登录'}
+                      {loading ? '退出中...' : '退出登录'}
                     </button>
                   </div>
                 )}
@@ -144,7 +144,6 @@ function DashboardLayout() {
         width={560}
       >
         <div className="settings-placeholder">
-          <span className="settings-placeholder__icon">🚧</span>
           <h3>功能开发中</h3>
           <p>设置功能正在开发中，敬请期待...</p>
         </div>

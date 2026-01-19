@@ -34,9 +34,8 @@ function CreateFolderModal({ isOpen, onClose, onConfirm }: CreateFolderModalProp
       <div className="create-folder-modal">
         <div className="create-folder-modal__section">
           <h4 className="create-folder-modal__label">基本信息</h4>
-          
+
           <div className="create-folder-modal__input-group">
-            <span className="create-folder-modal__icon">📁</span>
             <input
               type="text"
               className="create-folder-modal__input"
@@ -49,9 +48,9 @@ function CreateFolderModal({ isOpen, onClose, onConfirm }: CreateFolderModalProp
               autoFocus
             />
           </div>
-          
+
           {error && <div className="create-folder-modal__error">{error}</div>}
-          
+
           <textarea
             className="create-folder-modal__textarea"
             placeholder="知识库简介（选填）"
@@ -61,7 +60,7 @@ function CreateFolderModal({ isOpen, onClose, onConfirm }: CreateFolderModalProp
           />
         </div>
 
-        <button 
+        <button
           className="btn btn-primary btn-block create-folder-modal__submit"
           onClick={handleSubmit}
         >

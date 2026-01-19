@@ -137,7 +137,7 @@ function Admin() {
     return (
         <div className="admin-page">
             <div className="admin-page__header">
-                <h1 className="admin-page__title">👥 用户管理</h1>
+                <h1 className="admin-page__title">用户管理</h1>
                 <p className="admin-page__subtitle">管理系统用户，共 {total} 位用户</p>
             </div>
 
@@ -152,7 +152,7 @@ function Admin() {
                         onChange={e => setSearch(e.target.value)}
                     />
                     <button type="submit" className="admin-page__search-btn">
-                        🔍 搜索
+                        搜索
                     </button>
                 </form>
 
@@ -176,7 +176,6 @@ function Admin() {
                     <div className="admin-page__loading">加载中...</div>
                 ) : users.length === 0 ? (
                     <div className="admin-page__empty">
-                        <span>😔</span>
                         <p>没有找到用户</p>
                     </div>
                 ) : (

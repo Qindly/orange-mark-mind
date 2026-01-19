@@ -74,7 +74,6 @@ function EditFolderModal({ isOpen, onClose, folder, onSave, onDelete }: EditFold
                 {showDeleteConfirm ? (
                     // 删除确认界面
                     <div className="edit-folder-modal__confirm">
-                        <div className="edit-folder-modal__confirm-icon">⚠️</div>
                         <h3 className="edit-folder-modal__confirm-title">确定要删除吗？</h3>
                         <p className="edit-folder-modal__confirm-text">
                             删除知识库「{folder?.name}」后，其中的所有文档也将被删除，此操作不可恢复。
@@ -102,7 +101,6 @@ function EditFolderModal({ isOpen, onClose, folder, onSave, onDelete }: EditFold
                         <div className="edit-folder-modal__section">
                             <label className="edit-folder-modal__label">知识库名称</label>
                             <div className="edit-folder-modal__input-group">
-                                <span className="edit-folder-modal__icon">📁</span>
                                 <input
                                     type="text"
                                     className="edit-folder-modal__input"

@@ -111,19 +111,16 @@ function StartPage() {
       {/* 快捷操作 */}
       <section className="start-page__actions">
         <ActionCard
-          icon="📄"
           title="新建文档"
           description="文档、表格、画板、数据表"
           onClick={handleNewDocument}
         />
         <ActionCard
-          icon="📚"
           title="新建知识库"
           description="使用知识库整理知识"
           onClick={handleNewFolder}
         />
         <ActionCard
-          icon="🎨"
           title="模板中心"
           description="从模板中获取灵感"
           onClick={handleTemplates}

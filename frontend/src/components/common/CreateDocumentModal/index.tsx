@@ -72,11 +72,9 @@ function CreateDocumentModal({
                 className={`create-document-modal__folder ${selectedFolderId === folder.id ? "selected" : ""}`}
                 onClick={() => setSelectedFolderId(folder.id)}
               >
-                <span className="create-document-modal__folder-icon">📁</span>
                 <span className="create-document-modal__folder-name">
                   Qindy / {folder.name}
                 </span>
-                <span className="create-document-modal__folder-lock">🔒</span>
               </div>
             ))}
           </div>

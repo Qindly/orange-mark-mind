@@ -66,12 +66,18 @@ func TestMain(m *testing.M) {
 
 	// 初始化组件
 	userRepo := repository.NewUserRepository(db)
+	folderRepo := repository.NewFolderRepository(db)
+	docRepo := repository.NewDocumentRepository(db)
 	testAuthService = service.NewAuthService(userRepo, redisClient, cfg)
 	testAuthHandler = NewAuthHandler(testAuthService)
 
+	// 初始化 Admin 服务和处理器
+	adminService := service.NewAdminService(userRepo, folderRepo, docRepo)
+	adminHandler := NewAdminHandler(adminService)
+
 	// 创建测试路由
 	testRouter = gin.New()
-	setupTestRoutes(testRouter, testAuthHandler, testAuthService, cfg)
+	setupTestRoutes(testRouter, testAuthHandler, adminHandler, testAuthService, cfg)
 
 	// 运行测试
 	code := m.Run()
@@ -79,7 +85,7 @@ func TestMain(m *testing.M) {
 }
 
 // setupTestRoutes 设置测试路由
-func setupTestRoutes(r *gin.Engine, authHandler *AuthHandler, authService *service.AuthService, cfg *config.Config) {
+func setupTestRoutes(r *gin.Engine, authHandler *AuthHandler, adminHandler *AdminHandler, authService *service.AuthService, cfg *config.Config) {
 	v1 := r.Group("/api/v1")
 	{
 		auth := v1.Group("/auth")
@@ -94,6 +100,17 @@ func setupTestRoutes(r *gin.Engine, authHandler *AuthHandler, authService *servi
 		{
 			authProtected.POST("/logout", authHandler.Logout)
 			authProtected.POST("/logout-all", authHandler.LogoutAll)
+		}
+
+		// Admin 路由
+		admin := v1.Group("/admin")
+		admin.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		admin.Use(middleware.AdminMiddleware())
+		{
+			admin.GET("/users", adminHandler.GetUsers)
+			admin.GET("/users/:id", adminHandler.GetUserByID)
+			admin.PUT("/users/:id", adminHandler.UpdateUser)
+			admin.DELETE("/users/:id", adminHandler.DeleteUser)
 		}
 	}
 }

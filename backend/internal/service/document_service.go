@@ -275,3 +275,30 @@ func (s *DocumentService) Restore(externalID string, userID int64) error {
 
 	return s.docRepo.Restore(id, userID)
 }
+
+// Search 搜索文档
+func (s *DocumentService) Search(userID int64, query string, limit int) ([]model.Document, error) {
+	if limit <= 0 {
+		limit = 20
+	}
+	if limit > 100 {
+		limit = 100
+	}
+
+	docs, err := s.docRepo.Search(userID, query, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	// 设置外部 ID 和文件夹名称
+	for i := range docs {
+		docs[i].AfterFind()
+		if docs[i].FolderID != nil {
+			if folderName, err := s.docRepo.GetFolderName(*docs[i].FolderID); err == nil {
+				docs[i].FolderName = &folderName
+			}
+		}
+	}
+
+	return docs, nil
+}

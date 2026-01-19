@@ -197,6 +197,38 @@ func mockDocumentRouter() *gin.Engine {
 		})
 	})
 
+	// Mock GET /documents/search - 搜索文档
+	r.GET("/api/v1/documents/search", func(c *gin.Context) {
+		query := c.Query("q")
+		if query == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"code": 1001, "message": "搜索关键词不能为空"})
+			return
+		}
+		if len(query) > 100 {
+			c.JSON(http.StatusBadRequest, gin.H{"code": 1001, "message": "搜索关键词过长"})
+			return
+		}
+		// 模拟搜索结果
+		c.JSON(http.StatusOK, gin.H{
+			"code":    0,
+			"message": "success",
+			"data": []gin.H{
+				{
+					"id":          "doc-1",
+					"title":       "JavaScript 基础",
+					"folder_id":   "kb-1",
+					"folder_name": "前端知识库",
+				},
+				{
+					"id":          "doc-3",
+					"title":       "JavaScript 高级",
+					"folder_id":   "kb-1",
+					"folder_name": "前端知识库",
+				},
+			},
+		})
+	})
+
 	return r
 }
 
@@ -436,6 +468,77 @@ func TestRestoreDocument_NotFound(t *testing.T) {
 	w := performDocRequest(router, "POST", "/api/v1/documents/doc-999/restore", nil)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+// TestSearchDocuments_Success 测试搜索文档成功
+func TestSearchDocuments_Success(t *testing.T) {
+	router := mockDocumentRouter()
+
+	w := performDocRequest(router, "GET", "/api/v1/documents/search?q=JavaScript", nil)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	resp := parseDocResponse(w)
+	assert.Equal(t, float64(0), resp["code"])
+
+	data := resp["data"].([]interface{})
+	assert.GreaterOrEqual(t, len(data), 1)
+}
+
+// TestSearchDocuments_WithLimit 测试搜索文档带限制
+func TestSearchDocuments_WithLimit(t *testing.T) {
+	router := mockDocumentRouter()
+
+	w := performDocRequest(router, "GET", "/api/v1/documents/search?q=JavaScript&limit=5", nil)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	resp := parseDocResponse(w)
+	assert.Equal(t, float64(0), resp["code"])
+}
+
+// TestSearchDocuments_EmptyQuery 测试搜索关键词为空
+func TestSearchDocuments_EmptyQuery(t *testing.T) {
+	router := mockDocumentRouter()
+
+	w := performDocRequest(router, "GET", "/api/v1/documents/search?q=", nil)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	resp := parseDocResponse(w)
+	assert.Equal(t, float64(1001), resp["code"])
+	assert.Equal(t, "搜索关键词不能为空", resp["message"])
+}
+
+// TestSearchDocuments_NoQueryParam 测试没有搜索参数
+func TestSearchDocuments_NoQueryParam(t *testing.T) {
+	router := mockDocumentRouter()
+
+	w := performDocRequest(router, "GET", "/api/v1/documents/search", nil)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	resp := parseDocResponse(w)
+	assert.Equal(t, float64(1001), resp["code"])
+}
+
+// TestSearchDocuments_QueryTooLong 测试搜索关键词过长
+func TestSearchDocuments_QueryTooLong(t *testing.T) {
+	router := mockDocumentRouter()
+
+	// 生成超过100字符的查询
+	longQuery := ""
+	for i := 0; i < 101; i++ {
+		longQuery += "a"
+	}
+
+	w := performDocRequest(router, "GET", "/api/v1/documents/search?q="+longQuery, nil)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+
+	resp := parseDocResponse(w)
+	assert.Equal(t, float64(1001), resp["code"])
+	assert.Equal(t, "搜索关键词过长", resp["message"])
 }
 
 // ============================================================================

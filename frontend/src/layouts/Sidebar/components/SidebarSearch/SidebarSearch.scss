@@ -7,7 +7,8 @@
   gap: $spacing-sm;
   padding: $spacing-md;
   flex-shrink: 0;
-  
+  position: relative;
+
   &__input-wrapper {
     flex: 1;
     display: flex;
@@ -16,14 +17,39 @@
     padding: $spacing-sm $spacing-md;
     background: $color-bg-gray;
     border-radius: $radius-md;
+    transition: all $transition-fast;
+
+    &:focus-within {
+      background: $color-bg-white;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+    }
   }
-  
+
   &__icon {
     font-size: 14px;
     opacity: 0.6;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-text-secondary;
   }
-  
+
+  &__spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid $color-border;
+    border-top-color: $color-primary;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   &__input {
     flex: 1;
     width: 100%;
@@ -31,12 +57,13 @@
     background: transparent;
     font-size: $font-size-sm;
     outline: none;
-    
+    color: $color-text;
+
     &::placeholder {
       color: $color-text-light;
     }
   }
-  
+
   &__new-btn {
     width: 32px;
     height: 32px;
@@ -50,9 +77,93 @@
     @include flex-center;
     transition: all $transition-fast;
     flex-shrink: 0;
-    
+
     &:hover {
       background: $color-primary-hover;
     }
+  }
+
+  // 搜索结果下拉
+  &__results {
+    position: absolute;
+    top: 100%;
+    left: $spacing-md;
+    right: $spacing-md;
+    background: $color-bg-white;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-md;
+    box-shadow: $shadow-lg;
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 100;
+    animation: slideDown 0.15s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  &__result-item {
+    padding: $spacing-sm $spacing-md;
+    cursor: pointer;
+    border-bottom: 1px solid $color-border-light;
+    transition: background $transition-fast;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    &:hover,
+    &--active {
+      background: $color-bg-gray;
+    }
+  }
+
+  &__result-title {
+    font-size: $font-size-sm;
+    font-weight: 500;
+    color: $color-text;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__result-meta {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: $font-size-xs;
+    color: $color-text-light;
+  }
+
+  &__result-time {
+    &::before {
+      content: '·';
+      margin-right: $spacing-xs;
+    }
+  }
+
+  &__results-footer {
+    padding: $spacing-xs $spacing-md;
+    font-size: $font-size-xs;
+    color: $color-text-light;
+    background: $color-bg-gray;
+    text-align: center;
+  }
+
+  &__no-results {
+    padding: $spacing-lg;
+    text-align: center;
+    font-size: $font-size-sm;
+    color: $color-text-light;
   }
 }

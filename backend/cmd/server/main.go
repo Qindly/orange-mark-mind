@@ -110,6 +110,7 @@ func main() {
 			documents.GET("/favorites", docHandler.GetFavorites)
 			documents.GET("/trash", docHandler.GetTrash)
 			documents.GET("/:id", docHandler.GetByID)
+			documents.GET("/search", docHandler.Search)
 			documents.PUT("/:id", docHandler.Update)
 			documents.DELETE("/:id", docHandler.Delete)
 			documents.POST("/:id/restore", docHandler.Restore)

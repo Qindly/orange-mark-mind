@@ -207,3 +207,36 @@ func (h *DocumentHandler) Restore(c *gin.Context) {
 
 	response.Success(c, gin.H{"message": "文档已恢复"})
 }
+
+// Search 搜索文档
+// GET /api/v1/documents/search?q=关键词&limit=20
+func (h *DocumentHandler) Search(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+
+	// 获取搜索关键词
+	query := strings.TrimSpace(c.Query("q"))
+	if query == "" {
+		response.ErrorWithMessage(c, response.CodeParamError, "搜索关键词不能为空")
+		return
+	}
+	if len(query) > 100 {
+		response.ErrorWithMessage(c, response.CodeParamError, "搜索关键词过长")
+		return
+	}
+
+	// 解析 limit 参数
+	limit := 20
+	if limitStr := c.Query("limit"); limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil {
+			limit = l
+		}
+	}
+
+	docs, err := h.docService.Search(userID.(int64), query, limit)
+	if err != nil {
+		response.ErrorWithMessage(c, response.CodeInternalError, err.Error())
+		return
+	}
+
+	response.Success(c, docs)
+}

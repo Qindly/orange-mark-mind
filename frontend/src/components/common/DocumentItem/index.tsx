@@ -8,7 +8,7 @@ interface DocumentItemProps {
   onClick?: () => void;
 }
 
-function DocumentItem({ id, title, folderName, date, onClick }: DocumentItemProps) {
+function DocumentItem({ id: _id, title, folderName, date, onClick }: DocumentItemProps) {
   return (
     <div className="document-item" onClick={onClick}>
       <div className="document-item__content">

@@ -132,3 +132,15 @@ func (r *DocumentRepository) GetFolderName(folderID int64) (string, error) {
 	err := r.db.Table("folders").Select("name").Where("id = ?", folderID).First(&folder).Error
 	return folder.Name, err
 }
+
+// Search 搜索文档（标题和内容）
+func (r *DocumentRepository) Search(userID int64, query string, limit int) ([]model.Document, error) {
+	var docs []model.Document
+	searchPattern := "%" + query + "%"
+	err := r.db.Where("user_id = ? AND is_deleted = false AND (title ILIKE ? OR content ILIKE ?)",
+		userID, searchPattern, searchPattern).
+		Order("updated_at DESC").
+		Limit(limit).
+		Find(&docs).Error
+	return docs, err
+}

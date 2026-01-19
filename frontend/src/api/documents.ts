@@ -116,3 +116,15 @@ export const restoreDocument = (
 ): Promise<ApiResponse<DeleteDocumentResponse>> => {
   return request.post(`/documents/${docId}/restore`);
 };
+
+/**
+ * 搜索文档
+ * @param query 搜索关键词
+ * @param limit 结果数量限制
+ */
+export const searchDocuments = (
+  query: string,
+  limit: number = 20,
+): Promise<ApiResponse<Document[]>> => {
+  return request.get("/documents/search", { params: { q: query, limit } });
+};

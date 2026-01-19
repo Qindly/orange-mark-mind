@@ -33,7 +33,7 @@ a {
   color: $color-primary;
   text-decoration: none;
   transition: color $transition-fast;
-  
+
   &:hover {
     color: $color-primary-hover;
   }
@@ -42,36 +42,47 @@ a {
 // 通用按钮样式
 .btn {
   @include btn-base;
-  
+
   &-primary {
     background: $color-primary;
     color: white;
-    
+
     &:hover:not(:disabled) {
       background: $color-primary-hover;
       transform: translateY(-1px);
       box-shadow: $shadow-md;
     }
   }
-  
+
   &-outline {
     background: transparent;
     color: $color-text;
     border: 1px solid $color-border;
-    
+
     &:hover:not(:disabled) {
       border-color: $color-primary;
       color: $color-primary;
     }
   }
-  
+
   &-block {
     width: 100%;
   }
-  
+
   &-large {
     padding: 14px 32px;
     font-size: $font-size-lg;
+  }
+
+  &-danger {
+    color: #ff4d4f;
+    border-color: #ff4d4f;
+
+    &:hover:not(:disabled) {
+      color: white;
+      background: #ff4d4f;
+      border-color: #ff4d4f;
+    }
   }
 }
 
@@ -96,7 +107,7 @@ a {
 .form-group {
   @include flex-column;
   gap: $spacing-xs;
-  
+
   label {
     font-size: $font-size-sm;
     font-weight: 500;
@@ -119,7 +130,7 @@ a {
   color: $color-primary;
   font-weight: 500;
   margin-left: $spacing-xs;
-  
+
   &:hover {
     text-decoration: underline;
   }

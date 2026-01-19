@@ -41,6 +41,18 @@ function KnowledgeBase() {
     loadFolderData();
   }, [loadFolderData]);
 
+  // 监听文档更新事件，刷新文档列表
+  useEffect(() => {
+    const handleDocumentUpdated = () => {
+      loadFolderData();
+    };
+
+    window.addEventListener('document-updated', handleDocumentUpdated);
+    return () => {
+      window.removeEventListener('document-updated', handleDocumentUpdated);
+    };
+  }, [loadFolderData]);
+
   const handleBackToDashboard = () => {
     navigate("/dashboard");
   };
@@ -163,7 +175,7 @@ function KnowledgeBase() {
       <CreateDocumentModal
         isOpen={isDocModalOpen}
         onClose={() => setIsDocModalOpen(false)}
-        onCreateFolder={() => {}}
+        onCreateFolder={() => { }}
         onConfirm={handleDocumentConfirm}
       />
     </div>

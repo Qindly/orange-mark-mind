@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { fetchDocumentById, updateDocument } from '@/api/documents';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchDocumentById, updateDocument, deleteDocument } from '@/api/documents';
 import type { Document } from '@/types';
 import './DocumentView.scss';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 function DocumentView() {
-  const { docId } = useParams<{ docId: string }>();
+  const { folderId, docId } = useParams<{ folderId: string; docId: string }>();
+  const navigate = useNavigate();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -90,6 +91,9 @@ function DocumentView() {
         } : null);
         setSaveStatus('saved');
 
+        // 触发文档更新事件，通知父组件刷新列表
+        window.dispatchEvent(new CustomEvent('document-updated'));
+
         // 3 秒后隐藏"已保存"状态
         if (savedStatusTimerRef.current) {
           clearTimeout(savedStatusTimerRef.current);
@@ -161,6 +165,8 @@ function DocumentView() {
           content: editContent,
         } : null);
         setSaveStatus('saved');
+        // 触发文档更新事件，通知父组件刷新列表
+        window.dispatchEvent(new CustomEvent('document-updated'));
         setIsEditing(false);
       } else {
         console.error('保存文档失败:', res.message);
@@ -182,6 +188,28 @@ function DocumentView() {
     setEditContent(originalContentRef.current.content);
     setSaveStatus('idle');
     setIsEditing(false);
+  };
+
+  const handleDelete = async () => {
+    if (!docId || !folderId) return;
+
+    // 使用 confirm 确认删除
+    const confirmed = window.confirm('确定要删除这篇文档吗？删除后可以在回收站中恢复。');
+    if (!confirmed) return;
+
+    try {
+      const res = await deleteDocument(docId);
+      if (res.code === 0) {
+        // 删除成功，跳转回知识库首页
+        navigate(`/${folderId}`);
+      } else {
+        console.error('删除文档失败:', res.message);
+        alert('删除失败，请稍后重试');
+      }
+    } catch (error) {
+      console.error('删除文档失败:', error);
+      alert('删除失败，请稍后重试');
+    }
   };
 
   const renderContent = (content: string) => {
@@ -265,9 +293,17 @@ function DocumentView() {
               </button>
             </>
           ) : (
-            <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-              编辑
-            </button>
+            <>
+              <button
+                className="btn btn-outline btn-danger"
+                onClick={handleDelete}
+              >
+                删除
+              </button>
+              <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
+                编辑
+              </button>
+            </>
           )}
         </div>
       </header>

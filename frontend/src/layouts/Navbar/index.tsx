@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.scss';
 
@@ -6,6 +7,14 @@ interface NavbarProps {
 }
 
 function Navbar({ showAuthButton = true }: NavbarProps) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // 检查登录状态
+    const token = localStorage.getItem('access_token');
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <header className="navbar">
       <div className="container navbar__content">
@@ -21,9 +30,15 @@ function Navbar({ showAuthButton = true }: NavbarProps) {
         
         {showAuthButton && (
           <div className="navbar__actions">
-            <Link to="/login" className="btn btn-primary">
-              登录 / 注册
-            </Link>
+            {isLoggedIn ? (
+              <Link to="/dashboard" className="btn btn-primary">
+                控制台
+              </Link>
+            ) : (
+              <Link to="/login" className="btn btn-primary">
+                登录 / 注册
+              </Link>
+            )}
           </div>
         )}
       </div>

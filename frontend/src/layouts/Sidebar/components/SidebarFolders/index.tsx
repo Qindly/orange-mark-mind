@@ -4,7 +4,12 @@ import { fetchFolders } from "@/api/folders";
 import type { Folder } from "@/types";
 import "./SidebarFolders.scss";
 
-function SidebarFolders() {
+interface SidebarFoldersProps {
+  onAddFolder?: () => void;
+  refreshTrigger?: number;
+}
+
+function SidebarFolders({ onAddFolder, refreshTrigger }: SidebarFoldersProps) {
   const navigate = useNavigate();
   const [folders, setFolders] = useState<Folder[]>([]);
 
@@ -23,6 +28,13 @@ function SidebarFolders() {
     loadFolders();
   }, [loadFolders]);
 
+  // 监听 refreshTrigger 变化来刷新列表
+  useEffect(() => {
+    if (refreshTrigger && refreshTrigger > 0) {
+      loadFolders();
+    }
+  }, [refreshTrigger, loadFolders]);
+
   const handleFolderClick = (folder: Folder) => {
     navigate(`/${folder.id}`);
   };
@@ -31,7 +43,11 @@ function SidebarFolders() {
     <div className="sidebar-folders">
       <div className="sidebar-folders__header">
         <span className="sidebar-folders__title">知识库</span>
-        <button className="sidebar-folders__add-btn" title="新建知识库">
+        <button
+          className="sidebar-folders__add-btn"
+          title="新建知识库"
+          onClick={onAddFolder}
+        >
           +
         </button>
       </div>

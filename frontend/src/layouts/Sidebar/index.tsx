@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { SidebarSearch, SidebarMenu, SidebarFolders, SidebarFooter } from './components';
 import { CreateDocumentModal, CreateFolderModal } from '@/components';
+import { createFolder } from '@/api/folders';
 import './Sidebar.scss';
 
 function Sidebar() {
@@ -8,6 +9,7 @@ function Sidebar() {
   const [isResizing, setIsResizing] = useState(false);
   const [isDocModalOpen, setIsDocModalOpen] = useState(false);
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [folderRefreshTrigger, setFolderRefreshTrigger] = useState(0);
   const sidebarRef = useRef<HTMLElement>(null);
 
   // 拖拽调整宽度
@@ -48,19 +50,28 @@ function Sidebar() {
     setIsFolderModalOpen(true);
   };
 
-  const handleDocumentConfirm = (folderId: number) => {
+  const handleDocumentConfirm = (folderId: string) => {
     // TODO: 创建文档并跳转到编辑页
     console.log('Create document in folder:', folderId);
   };
 
-  const handleFolderConfirm = (name: string, description: string) => {
-    // TODO: 调用 API 创建文件夹
-    console.log('Create folder:', name, description);
+  const handleFolderConfirm = async (name: string, description: string) => {
+    try {
+      const res = await createFolder({ name, description: description || undefined });
+      if (res.code === 0) {
+        // 创建成功，刷新知识库列表
+        setFolderRefreshTrigger(prev => prev + 1);
+      } else {
+        console.error('创建知识库失败:', res.message);
+      }
+    } catch (error) {
+      console.error('创建知识库失败:', error);
+    }
   };
 
   return (
     <>
-      <aside 
+      <aside
         ref={sidebarRef}
         className={`sidebar ${isResizing ? 'sidebar--resizing' : ''}`}
         style={{ width: sidebarWidth }}
@@ -70,11 +81,14 @@ function Sidebar() {
           <SidebarMenu />
         </div>
 
-        <SidebarFolders />
+        <SidebarFolders
+          onAddFolder={handleCreateFolder}
+          refreshTrigger={folderRefreshTrigger}
+        />
 
         <SidebarFooter />
 
-        <div 
+        <div
           className="sidebar__resizer"
           onMouseDown={startResizing}
         />

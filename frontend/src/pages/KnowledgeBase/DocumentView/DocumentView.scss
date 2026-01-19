@@ -27,6 +27,26 @@
     color: $color-text;
   }
   
+  &__title-input {
+    font-size: $font-size-2xl;
+    font-weight: 700;
+    color: $color-text;
+    border: none;
+    border-bottom: 2px solid $color-primary;
+    background: transparent;
+    padding: $spacing-xs 0;
+    flex: 1;
+    min-width: 200px;
+    
+    &:focus {
+      outline: none;
+    }
+    
+    &::placeholder {
+      color: $color-text-light;
+    }
+  }
+  
   &__actions {
     display: flex;
     align-items: center;

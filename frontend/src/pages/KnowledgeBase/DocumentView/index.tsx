@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchDocumentById } from '@/api/documents';
+import { fetchDocumentById, updateDocument } from '@/api/documents';
 import type { Document } from '@/types';
 import './DocumentView.scss';
 
@@ -8,7 +8,9 @@ function DocumentView() {
   const { docId } = useParams<{ docId: string }>();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
 
   const loadDocument = useCallback(async () => {
@@ -18,6 +20,7 @@ function DocumentView() {
       const res = await fetchDocumentById(docId);
       if (res.code === 0 && res.data) {
         setDocument(res.data);
+        setEditTitle(res.data.title || '');
         setEditContent(res.data.content || '');
       }
     } catch (error) {
@@ -31,9 +34,40 @@ function DocumentView() {
     loadDocument();
   }, [loadDocument]);
 
-  const handleSave = () => {
-    // TODO: 调用 API 保存文档
-    console.log('Save document:', editContent);
+  const handleSave = async () => {
+    if (!docId || !document) return;
+
+    setSaving(true);
+    try {
+      const res = await updateDocument(docId, {
+        title: editTitle.trim() || '无标题文档',
+        content: editContent,
+      });
+
+      if (res.code === 0) {
+        // 更新本地状态
+        setDocument(prev => prev ? {
+          ...prev,
+          title: editTitle.trim() || '无标题文档',
+          content: editContent,
+        } : null);
+        setIsEditing(false);
+      } else {
+        console.error('保存文档失败:', res.message);
+      }
+    } catch (error) {
+      console.error('保存文档失败:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // 恢复到原始内容
+    if (document) {
+      setEditTitle(document.title || '');
+      setEditContent(document.content || '');
+    }
     setIsEditing(false);
   };
 
@@ -79,16 +113,34 @@ function DocumentView() {
     <div className="document-view">
       {/* 顶部：标题和操作 */}
       <header className="document-view__header">
-        <h1 className="document-view__title">{document.title}</h1>
+        {isEditing ? (
+          <input
+            type="text"
+            className="document-view__title-input"
+            value={editTitle}
+            onChange={e => setEditTitle(e.target.value)}
+            placeholder="请输入标题"
+          />
+        ) : (
+          <h1 className="document-view__title">{document.title}</h1>
+        )}
         <div className="document-view__actions">
           {document.is_favorited && <span className="doc-star">⭐</span>}
           {isEditing ? (
             <>
-              <button className="btn btn-outline" onClick={() => setIsEditing(false)}>
+              <button
+                className="btn btn-outline"
+                onClick={handleCancel}
+                disabled={saving}
+              >
                 取消
               </button>
-              <button className="btn btn-primary" onClick={handleSave}>
-                保存
+              <button
+                className="btn btn-primary"
+                onClick={handleSave}
+                disabled={saving}
+              >
+                {saving ? '保存中...' : '保存'}
               </button>
             </>
           ) : (
@@ -119,3 +171,4 @@ function DocumentView() {
 }
 
 export default DocumentView;
+

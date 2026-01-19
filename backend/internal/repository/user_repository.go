@@ -78,3 +78,46 @@ func (r *UserRepository) ExistsByEmail(email string) (bool, error) {
 func (r *UserRepository) Update(user *model.User) error {
 	return r.db.Save(user).Error
 }
+
+// FindAllWithPagination 分页查询用户列表（管理员用）
+func (r *UserRepository) FindAllWithPagination(page, pageSize int, search, role, status string) ([]model.User, int64, error) {
+	var users []model.User
+	var total int64
+
+	query := r.db.Model(&model.User{})
+
+	// 搜索条件：用户名、昵称、邮箱
+	if search != "" {
+		searchPattern := "%" + search + "%"
+		query = query.Where("username LIKE ? OR nickname LIKE ? OR email LIKE ?",
+			searchPattern, searchPattern, searchPattern)
+	}
+
+	// 角色筛选
+	if role != "" {
+		query = query.Where("role = ?", role)
+	}
+
+	// 状态筛选
+	if status != "" {
+		query = query.Where("status = ?", status)
+	}
+
+	// 获取总数
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 分页查询
+	offset := (page - 1) * pageSize
+	if err := query.Order("id ASC").Offset(offset).Limit(pageSize).Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
+}
+
+// Delete 删除用户
+func (r *UserRepository) Delete(id int64) error {
+	return r.db.Delete(&model.User{}, id).Error
+}

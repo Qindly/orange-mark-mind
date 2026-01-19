@@ -115,6 +115,19 @@ func main() {
 			documents.POST("/:id/restore", docHandler.Restore)
 		}
 
+		// 管理员路由（需要认证 + 管理员权限）
+		adminService := service.NewAdminService(userRepo, folderRepo, docRepo)
+		adminHandler := handler.NewAdminHandler(adminService)
+		admin := v1.Group("/admin")
+		admin.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		admin.Use(middleware.AdminMiddleware())
+		{
+			admin.GET("/users", adminHandler.GetUsers)
+			admin.GET("/users/:id", adminHandler.GetUserByID)
+			admin.PUT("/users/:id", adminHandler.UpdateUser)
+			admin.DELETE("/users/:id", adminHandler.DeleteUser)
+		}
+
 		// TODO: AI 对话路由
 		// ai := v1.Group("/ai")
 		// ai.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))

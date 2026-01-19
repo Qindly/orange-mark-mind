@@ -238,9 +238,9 @@ func (s *FolderService) Delete(externalID string, userID int64, deleteChildren b
 	// 统计文档数量
 	docCount, _ := s.folderRepo.CountDocumentsByFolderID(folder.ID)
 
-	// 将文档移动到默认知识库
+	// 删除知识库下的所有文档（软删除）
 	if docCount > 0 {
-		if err := s.folderRepo.MoveDocumentsToFolder(folder.ID, model.DefaultFolderID); err != nil {
+		if err := s.folderRepo.DeleteDocumentsByFolderID(folder.ID); err != nil {
 			return 0, err
 		}
 	}

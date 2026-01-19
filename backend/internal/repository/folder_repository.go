@@ -103,3 +103,10 @@ func (r *FolderRepository) ExistsByNameAndUserID(name string, userID int64, excl
 	err := query.Count(&count).Error
 	return count > 0, err
 }
+
+// DeleteDocumentsByFolderID 删除知识库下的所有文档（软删除）
+func (r *FolderRepository) DeleteDocumentsByFolderID(folderID int64) error {
+	return r.db.Table("documents").
+		Where("folder_id = ?", folderID).
+		Update("is_deleted", true).Error
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Outlet, useNavigate } from "react-router-dom";
-import { ResizableSidebar } from "@/components";
-import { fetchFolderById } from "@/api/folders";
+import { ResizableSidebar, EditFolderModal } from "@/components";
+import { fetchFolderById, updateFolder } from "@/api/folders";
 import { fetchDocumentsByFolder, createDocument } from "@/api/documents";
 import type { Folder, Document } from "@/types";
 import "./KnowledgeBase.scss";
@@ -14,6 +14,7 @@ function KnowledgeBase() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isEditFolderModalOpen, setIsEditFolderModalOpen] = useState(false);
 
   const loadFolderData = useCallback(async () => {
     if (!folderId) return;
@@ -90,6 +91,27 @@ function KnowledgeBase() {
     }
   };
 
+  const handleEditFolder = () => {
+    setIsEditFolderModalOpen(true);
+  };
+
+  const handleSaveFolder = async (name: string, description: string) => {
+    if (!folderId) return;
+
+    const res = await updateFolder(folderId, { name, description: description || undefined });
+    if (res.code === 0) {
+      // 更新本地 folder 状态
+      setFolder(prev => prev ? { ...prev, name, description } : null);
+    } else {
+      throw new Error(res.message);
+    }
+  };
+
+  const handleDeleteFolder = () => {
+    // TODO: 实现删除知识库功能
+    console.log('Delete folder - not implemented yet');
+  };
+
   const isDocActive = (doc: Document) => {
     return doc.id === docId;
   };
@@ -124,7 +146,7 @@ function KnowledgeBase() {
         <div className="kb-header">
           <span className="kb-header__icon">📁</span>
           <span className="kb-header__title">{folder.name}</span>
-          <button className="kb-header__more">•••</button>
+          <button className="kb-header__more" onClick={handleEditFolder}>•••</button>
         </div>
 
         {/* 搜索和添加 */}
@@ -186,6 +208,15 @@ function KnowledgeBase() {
           <Outlet />
         )}
       </main>
+
+      {/* 编辑知识库弹窗 */}
+      <EditFolderModal
+        isOpen={isEditFolderModalOpen}
+        onClose={() => setIsEditFolderModalOpen(false)}
+        folder={folder}
+        onSave={handleSaveFolder}
+        onDelete={handleDeleteFolder}
+      />
     </div>
   );
 }

@@ -22,6 +22,7 @@
 | `/documents/:id`         | GET    |  ✅  | 获取文档详情   |
 | `/documents/:id`         | PUT    |  ✅  | 更新文档       |
 | `/documents/:id`         | DELETE |  ✅  | 删除文档       |
+| `/documents/search`      | GET    |  ✅  | 搜索文档       |
 | `/documents/recent`      | GET    |  ✅  | 获取最近文档   |
 | `/documents/favorites`   | GET    |  ✅  | 获取收藏文档   |
 | `/documents/trash`       | GET    |  ✅  | 获取回收站文档 |
@@ -190,6 +191,62 @@ interface Document {
 
 ---
 
+## GET /api/v1/documents/search
+
+全局搜索文档，在标题和内容中进行模糊匹配。
+
+### 请求参数 (Query)
+
+| 参数  | 类型   | 必填 | 说明                               |
+| :---- | :----- | :--: | :--------------------------------- |
+| q     | string |  ✅  | 搜索关键词，1-100 字符             |
+| limit | number |  ❌  | 返回数量，默认 20，最大 100        |
+
+### 响应
+
+**成功 (200)**
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": [
+    {
+      "id": "doc-1",
+      "user_id": 1,
+      "folder_id": "kb-1",
+      "folder_name": "前端知识库",
+      "title": "JavaScript 基础",
+      "is_favorited": false,
+      "is_deleted": false,
+      "sort_order": 0,
+      "created_at": "2026-01-18T00:00:00Z",
+      "updated_at": "2026-01-18T00:00:00Z"
+    }
+  ]
+}
+```
+
+**关键词为空 (400)**
+
+```json
+{
+  "code": 1001,
+  "message": "搜索关键词不能为空"
+}
+```
+
+**关键词过长 (400)**
+
+```json
+{
+  "code": 1001,
+  "message": "搜索关键词过长"
+}
+```
+
+---
+
 ## PUT /api/v1/documents/:id
 
 更新文档。
@@ -315,4 +372,4 @@ interface Document {
 
 ---
 
-_最后更新: 2026-01-18_
+_最后更新: 2026-01-19_

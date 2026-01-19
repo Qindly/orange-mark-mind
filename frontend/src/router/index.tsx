@@ -4,9 +4,10 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import Admin from '@/pages/Admin';
 
 // Dashboard Layout and Pages
-import { DashboardLayout } from '@/layouts';
+import { DashboardLayout, AdminLayout } from '@/layouts';
 import StartPage from '@/pages/Dashboard/StartPage';
 import FavoritesPage from '@/pages/Dashboard/FavoritesPage';
 import TrashPage from '@/pages/Dashboard/TrashPage';
@@ -26,13 +27,34 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Admin 路由守卫组件
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const token = localStorage.getItem('access_token');
+  const userInfo = localStorage.getItem('user_info');
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  try {
+    const user = userInfo ? JSON.parse(userInfo) : null;
+    if (user?.role !== 'admin') {
+      return <Navigate to="/dashboard" replace />;
+    }
+  } catch {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 // 404 页面
 const NotFound = () => (
-  <div style={{ 
-    display: 'flex', 
+  <div style={{
+    display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
     height: '100vh',
     gap: '16px'
   }}>
@@ -89,6 +111,21 @@ const router = createBrowserRouter([
       },
     ],
   },
+  // 管理面板路由（仅管理员可访问）
+  {
+    path: '/admin',
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Admin />,
+      },
+    ],
+  },
   // 知识库路由 - 直接使用完整 ID
   // URL: /kb-1 或 /kb-1/doc-1
   {
@@ -113,3 +150,4 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+

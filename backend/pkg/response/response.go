@@ -18,10 +18,11 @@ const (
 	CodeSuccess = 0
 
 	// 通用错误 1xxx
-	CodeParamError      = 1001
-	CodeUnauthorized    = 1002
-	CodeForbidden       = 1003
-	CodeNotFound        = 1004
+	CodeParamError   = 1001
+	CodeUnauthorized = 1002
+	CodeForbidden    = 1003
+	CodeNotFound     = 1004
+	CodeBadRequest   = 1005
 
 	// 用户相关 2xxx
 	CodeUserExists          = 2001
@@ -74,7 +75,7 @@ func Error(c *gin.Context, code int) {
 	if message == "" {
 		message = "未知错误"
 	}
-	
+
 	httpStatus := getHTTPStatus(code)
 	c.JSON(httpStatus, Response{
 		Code:    code,
@@ -96,7 +97,7 @@ func getHTTPStatus(code int) int {
 	switch code {
 	case CodeSuccess:
 		return http.StatusOK
-	case CodeParamError:
+	case CodeParamError, CodeBadRequest:
 		return http.StatusBadRequest
 	case CodeUnauthorized, CodeInvalidCredentials, CodeInvalidRefreshToken:
 		return http.StatusUnauthorized
@@ -109,4 +110,9 @@ func getHTTPStatus(code int) int {
 	default:
 		return http.StatusInternalServerError
 	}
+}
+
+// ErrorWithMsg 带自定义消息的错误响应（ErrorWithMessage 的别名）
+func ErrorWithMsg(c *gin.Context, code int, message string) {
+	ErrorWithMessage(c, code, message)
 }

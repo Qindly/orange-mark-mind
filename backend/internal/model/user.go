@@ -44,3 +44,31 @@ func (u *User) IsActive() bool {
 func (u *User) IsAdmin() bool {
 	return u.Role == RoleAdmin
 }
+
+// UserResponse 用户响应结构（不包含敏感信息）
+type UserResponse struct {
+	ID        int64  `json:"id"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Nickname  string `json:"nickname"`
+	Avatar    string `json:"avatar"`
+	Role      string `json:"role"`
+	Status    string `json:"status"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+// ToResponse 转换为响应结构
+func (u *User) ToResponse() UserResponse {
+	return UserResponse{
+		ID:        u.ID,
+		Username:  u.Username,
+		Email:     u.Email,
+		Nickname:  u.Nickname,
+		Avatar:    u.Avatar,
+		Role:      u.Role,
+		Status:    u.Status,
+		CreatedAt: u.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		UpdatedAt: u.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+	}
+}

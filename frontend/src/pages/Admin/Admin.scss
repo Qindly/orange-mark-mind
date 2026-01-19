@@ -1,0 +1,328 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.admin-page {
+    max-width: 1400px;
+    margin: 0 auto;
+
+    &__header {
+        margin-bottom: $spacing-xl;
+    }
+
+    &__title {
+        font-size: 28px;
+        font-weight: 600;
+        color: $color-text;
+        margin-bottom: $spacing-xs;
+    }
+
+    &__subtitle {
+        font-size: $font-size-base;
+        color: $color-text-light;
+    }
+
+    // 工具栏
+    &__toolbar {
+        display: flex;
+        gap: $spacing-md;
+        margin-bottom: $spacing-lg;
+        flex-wrap: wrap;
+    }
+
+    &__search {
+        display: flex;
+        flex: 1;
+        min-width: 300px;
+        gap: $spacing-sm;
+    }
+
+    &__search-input {
+        flex: 1;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        font-size: $font-size-base;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+        }
+    }
+
+    &__search-btn {
+        padding: $spacing-sm $spacing-lg;
+        background: $color-primary;
+        color: white;
+        border: none;
+        border-radius: $radius-md;
+        font-size: $font-size-base;
+        cursor: pointer;
+        transition: background $transition-fast;
+        white-space: nowrap;
+
+        &:hover {
+            background: darken($color-primary, 10%);
+        }
+    }
+
+    &__filter {
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        font-size: $font-size-base;
+        background: white;
+        cursor: pointer;
+        min-width: 120px;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+        }
+    }
+
+    // 内容区
+    &__content {
+        background: $color-bg-white;
+        border-radius: $radius-lg;
+        border: 1px solid $color-border-light;
+        overflow: hidden;
+    }
+
+    &__loading,
+    &__empty {
+        padding: $spacing-xl * 2;
+        text-align: center;
+        color: $color-text-light;
+
+        span {
+            font-size: 48px;
+            display: block;
+            margin-bottom: $spacing-md;
+        }
+    }
+
+    // 表格
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: $spacing-md;
+            text-align: left;
+            border-bottom: 1px solid $color-border-light;
+        }
+
+        th {
+            background: $color-bg-gray;
+            font-weight: 600;
+            font-size: $font-size-sm;
+            color: $color-text-secondary;
+        }
+
+        td {
+            font-size: $font-size-sm;
+            color: $color-text;
+        }
+
+        tr:hover td {
+            background: $color-bg;
+        }
+    }
+
+    // 徽章
+    &__badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        font-weight: 500;
+
+        &--admin {
+            background: rgba($color-primary, 0.15);
+            color: $color-primary;
+        }
+
+        &--user {
+            background: rgba(#666, 0.1);
+            color: #666;
+        }
+
+        &--active {
+            background: rgba(#52c41a, 0.15);
+            color: #52c41a;
+        }
+
+        &--inactive {
+            background: rgba(#faad14, 0.15);
+            color: #faad14;
+        }
+
+        &--banned {
+            background: rgba(#ff4d4f, 0.15);
+            color: #ff4d4f;
+        }
+    }
+
+    // 操作按钮
+    &__actions {
+        display: flex;
+        gap: $spacing-xs;
+    }
+
+    &__action-btn {
+        padding: 4px 12px;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        cursor: pointer;
+        border: none;
+        transition: all $transition-fast;
+
+        &--edit {
+            background: rgba($color-primary, 0.1);
+            color: $color-primary;
+
+            &:hover {
+                background: $color-primary;
+                color: white;
+            }
+        }
+
+        &--delete {
+            background: rgba(#ff4d4f, 0.1);
+            color: #ff4d4f;
+
+            &:hover {
+                background: #ff4d4f;
+                color: white;
+            }
+        }
+    }
+
+    // 分页
+    &__pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: $spacing-md;
+        padding: $spacing-lg;
+        border-top: 1px solid $color-border-light;
+
+        button {
+            padding: $spacing-xs $spacing-md;
+            border: 1px solid $color-border;
+            border-radius: $radius-md;
+            background: white;
+            cursor: pointer;
+            font-size: $font-size-sm;
+            transition: all $transition-fast;
+
+            &:hover:not(:disabled) {
+                border-color: $color-primary;
+                color: $color-primary;
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+
+        span {
+            font-size: $font-size-sm;
+            color: $color-text-light;
+        }
+    }
+
+    // 弹窗
+    &__modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    &__modal {
+        background: white;
+        border-radius: $radius-lg;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    &__modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-lg;
+        border-bottom: 1px solid $color-border-light;
+
+        h3 {
+            font-size: $font-size-lg;
+            font-weight: 600;
+            color: $color-text;
+            margin: 0;
+        }
+    }
+
+    &__modal-close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        font-size: 24px;
+        color: $color-text-light;
+        cursor: pointer;
+        border-radius: $radius-sm;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: $color-bg-gray;
+            color: $color-text;
+        }
+    }
+
+    &__modal-body {
+        padding: $spacing-lg;
+    }
+
+    &__form-group {
+        margin-bottom: $spacing-md;
+
+        label {
+            display: block;
+            font-size: $font-size-sm;
+            font-weight: 500;
+            color: $color-text;
+            margin-bottom: $spacing-xs;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: $spacing-sm $spacing-md;
+            border: 1px solid $color-border;
+            border-radius: $radius-md;
+            font-size: $font-size-base;
+
+            &:focus {
+                outline: none;
+                border-color: $color-primary;
+            }
+        }
+    }
+
+    &__modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-sm;
+        padding: $spacing-lg;
+        border-top: 1px solid $color-border-light;
+    }
+}

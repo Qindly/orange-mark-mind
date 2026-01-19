@@ -1,0 +1,132 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.admin-layout {
+    min-height: 100vh;
+    background: $color-bg;
+    display: flex;
+    flex-direction: column;
+
+    // 顶部导航栏
+    &__header {
+        height: 56px;
+        background: $color-bg-white;
+        border-bottom: 1px solid $color-border-light;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    &__header-content {
+        @include flex-between;
+        height: 100%;
+        max-width: 100%;
+        padding: 0 $spacing-lg;
+    }
+
+    &__header-left {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+    }
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        text-decoration: none;
+    }
+
+    &__logo-icon {
+        font-size: 28px;
+    }
+
+    &__logo-text {
+        font-size: $font-size-xl;
+        font-weight: 600;
+        @include gradient-text;
+    }
+
+    &__divider {
+        color: $color-border;
+        font-weight: 300;
+    }
+
+    &__title {
+        font-size: $font-size-base;
+        font-weight: 500;
+        color: $color-text;
+    }
+
+    &__header-right {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+    }
+
+    &__back-btn {
+        padding: $spacing-xs $spacing-md;
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        background: transparent;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            border-color: $color-primary;
+            color: $color-primary;
+        }
+    }
+
+    &__user {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+    }
+
+    &__user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: $color-primary-light;
+        color: $color-primary;
+        @include flex-center;
+        font-size: $font-size-sm;
+        font-weight: 500;
+    }
+
+    &__user-name {
+        font-size: $font-size-sm;
+        color: $color-text;
+    }
+
+    &__logout-btn {
+        padding: $spacing-xs $spacing-md;
+        font-size: $font-size-sm;
+        color: #ff4d4f;
+        background: transparent;
+        border: 1px solid #ff4d4f;
+        border-radius: $radius-md;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover:not(:disabled) {
+            background: #ff4d4f;
+            color: white;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    // 内容区
+    &__content {
+        flex: 1;
+        padding: $spacing-lg;
+        overflow-y: auto;
+    }
+}

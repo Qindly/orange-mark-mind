@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActionCard, DocumentItem, TabGroup, PageHeader, CreateDocumentModal, CreateFolderModal } from '@/components';
-import { fetchRecentDocuments } from '@/api/documents';
+import { fetchRecentDocuments, createDocument } from '@/api/documents';
 import { createFolder } from '@/api/folders';
 import type { Document } from '@/types';
 import './StartPage.scss';
@@ -60,9 +60,18 @@ function StartPage() {
     navigate('/dashboard/templates');
   };
 
-  const handleDocumentConfirm = (folderId: string) => {
-    // 创建文档后跳转到知识库
-    navigate(`/${folderId}`);
+  const handleDocumentConfirm = async (folderId: string) => {
+    try {
+      const res = await createDocument({ title: '无标题文档', folder_id: folderId });
+      if (res.code === 0) {
+        // 创建成功，跳转到文档编辑页
+        navigate(`/${folderId}/${res.data.id}`);
+      } else {
+        console.error('创建文档失败:', res.message);
+      }
+    } catch (error) {
+      console.error('创建文档失败:', error);
+    }
   };
 
   const handleFolderConfirm = async (name: string, description: string) => {

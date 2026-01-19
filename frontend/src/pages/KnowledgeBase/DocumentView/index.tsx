@@ -1,15 +1,27 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { fetchDocumentById } from '@/api/documents';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchDocumentById, updateDocument, deleteDocument } from '@/api/documents';
 import type { Document } from '@/types';
 import './DocumentView.scss';
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
 function DocumentView() {
-  const { docId } = useParams<{ docId: string }>();
+  const { folderId, docId } = useParams<{ folderId: string; docId: string }>();
+  const navigate = useNavigate();
   const [document, setDocument] = useState<Document | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+
+  // 防抖 timer ref
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 保存状态显示 timer ref
+  const savedStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 记录原始内容用于比较是否有变化
+  const originalContentRef = useRef({ title: '', content: '' });
 
   const loadDocument = useCallback(async () => {
     if (!docId) return;
@@ -18,7 +30,12 @@ function DocumentView() {
       const res = await fetchDocumentById(docId);
       if (res.code === 0 && res.data) {
         setDocument(res.data);
+        setEditTitle(res.data.title || '');
         setEditContent(res.data.content || '');
+        originalContentRef.current = {
+          title: res.data.title || '',
+          content: res.data.content || '',
+        };
       }
     } catch (error) {
       console.error('Failed to load document:', error);
@@ -31,17 +48,189 @@ function DocumentView() {
     loadDocument();
   }, [loadDocument]);
 
-  const handleSave = () => {
-    // TODO: 调用 API 保存文档
-    console.log('Save document:', editContent);
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+      if (savedStatusTimerRef.current) {
+        clearTimeout(savedStatusTimerRef.current);
+      }
+    };
+  }, []);
+
+  // 自动保存函数（不退出编辑模式）
+  const autoSave = useCallback(async (title: string, content: string) => {
+    if (!docId) return;
+
+    // 检查内容是否有变化
+    const titleChanged = title !== originalContentRef.current.title;
+    const contentChanged = content !== originalContentRef.current.content;
+
+    if (!titleChanged && !contentChanged) {
+      return; // 内容没变，不需要保存
+    }
+
+    setSaveStatus('saving');
+    try {
+      const res = await updateDocument(docId, {
+        title: title.trim() || '无标题文档',
+        content: content,
+      });
+
+      if (res.code === 0) {
+        const newTitle = title.trim() || '无标题文档';
+
+        // 只在标题发生变化时触发事件，通知父组件更新对应文档的标题
+        if (titleChanged) {
+          window.dispatchEvent(new CustomEvent('document-title-updated', {
+            detail: { docId, title: newTitle }
+          }));
+        }
+
+        // 更新原始内容引用
+        originalContentRef.current = {
+          title: newTitle,
+          content: content,
+        };
+        // 更新本地 document 状态
+        setDocument(prev => prev ? {
+          ...prev,
+          title: newTitle,
+          content: content,
+        } : null);
+        setSaveStatus('saved');
+
+        // 3 秒后隐藏"已保存"状态
+        if (savedStatusTimerRef.current) {
+          clearTimeout(savedStatusTimerRef.current);
+        }
+        savedStatusTimerRef.current = setTimeout(() => {
+          setSaveStatus('idle');
+        }, 3000);
+      } else {
+        console.error('自动保存失败:', res.message);
+        setSaveStatus('error');
+      }
+    } catch (error) {
+      console.error('自动保存失败:', error);
+      setSaveStatus('error');
+    }
+  }, [docId]);
+
+  // 防抖触发自动保存
+  const triggerAutoSave = useCallback((title: string, content: string) => {
+    // 清除之前的定时器
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    // 设置新的定时器，2 秒后自动保存
+    autoSaveTimerRef.current = setTimeout(() => {
+      autoSave(title, content);
+    }, 2000);
+  }, [autoSave]);
+
+  // 标题变化处理
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setEditTitle(newTitle);
+    triggerAutoSave(newTitle, editContent);
+  };
+
+  // 内容变化处理
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setEditContent(newContent);
+    triggerAutoSave(editTitle, newContent);
+  };
+
+  // 手动保存并退出编辑模式
+  const handleSaveAndExit = async () => {
+    if (!docId || !document) return;
+
+    // 清除自动保存定时器
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    const newTitle = editTitle.trim() || '无标题文档';
+    const titleChanged = newTitle !== originalContentRef.current.title;
+
+    setSaveStatus('saving');
+    try {
+      const res = await updateDocument(docId, {
+        title: newTitle,
+        content: editContent,
+      });
+
+      if (res.code === 0) {
+        // 只在标题发生变化时触发事件
+        if (titleChanged) {
+          window.dispatchEvent(new CustomEvent('document-title-updated', {
+            detail: { docId, title: newTitle }
+          }));
+        }
+
+        originalContentRef.current = {
+          title: newTitle,
+          content: editContent,
+        };
+        setDocument(prev => prev ? {
+          ...prev,
+          title: newTitle,
+          content: editContent,
+        } : null);
+        setSaveStatus('saved');
+        setIsEditing(false);
+      } else {
+        console.error('保存文档失败:', res.message);
+        setSaveStatus('error');
+      }
+    } catch (error) {
+      console.error('保存文档失败:', error);
+      setSaveStatus('error');
+    }
+  };
+
+  const handleCancel = () => {
+    // 清除自动保存定时器
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+    // 恢复到原始内容
+    setEditTitle(originalContentRef.current.title);
+    setEditContent(originalContentRef.current.content);
+    setSaveStatus('idle');
     setIsEditing(false);
   };
 
+  const handleDelete = async () => {
+    if (!docId || !folderId) return;
+
+    // 使用 confirm 确认删除
+    const confirmed = window.confirm('确定要删除这篇文档吗？删除后可以在回收站中恢复。');
+    if (!confirmed) return;
+
+    try {
+      const res = await deleteDocument(docId);
+      if (res.code === 0) {
+        // 删除成功，跳转回知识库首页
+        navigate(`/${folderId}`);
+      } else {
+        console.error('删除文档失败:', res.message);
+        alert('删除失败，请稍后重试');
+      }
+    } catch (error) {
+      console.error('删除文档失败:', error);
+      alert('删除失败，请稍后重试');
+    }
+  };
+
   const renderContent = (content: string) => {
-    // 简单的 Markdown 渲染
     const lines = content.split('\n');
     return lines.map((line, index) => {
-      // 标题
       if (line.startsWith('# ')) {
         return <h1 key={index} className="doc-h1">{line.slice(2)}</h1>;
       }
@@ -51,20 +240,30 @@ function DocumentView() {
       if (line.startsWith('### ')) {
         return <h3 key={index} className="doc-h3">{line.slice(4)}</h3>;
       }
-      // 代码块开始
       if (line.startsWith('```')) {
-        return null; // 简化处理
+        return null;
       }
-      // 列表
       if (line.match(/^\d+\. /)) {
         return <p key={index} className="doc-list-item">{line}</p>;
       }
-      // 普通段落
       if (line.trim()) {
         return <p key={index} className="doc-paragraph">{line}</p>;
       }
       return <br key={index} />;
     });
+  };
+
+  const renderSaveStatus = () => {
+    switch (saveStatus) {
+      case 'saving':
+        return <span className="save-status save-status--saving">保存中...</span>;
+      case 'saved':
+        return <span className="save-status save-status--saved">已保存</span>;
+      case 'error':
+        return <span className="save-status save-status--error">保存失败</span>;
+      default:
+        return null;
+    }
   };
 
   if (loading) {
@@ -79,22 +278,48 @@ function DocumentView() {
     <div className="document-view">
       {/* 顶部：标题和操作 */}
       <header className="document-view__header">
-        <h1 className="document-view__title">{document.title}</h1>
+        {isEditing ? (
+          <input
+            type="text"
+            className="document-view__title-input"
+            value={editTitle}
+            onChange={handleTitleChange}
+            placeholder="请输入标题"
+          />
+        ) : (
+          <h1 className="document-view__title">{document.title}</h1>
+        )}
         <div className="document-view__actions">
+          {isEditing && renderSaveStatus()}
           {document.is_favorited && <span className="doc-star">⭐</span>}
           {isEditing ? (
             <>
-              <button className="btn btn-outline" onClick={() => setIsEditing(false)}>
+              <button
+                className="btn btn-outline"
+                onClick={handleCancel}
+              >
                 取消
               </button>
-              <button className="btn btn-primary" onClick={handleSave}>
-                保存
+              <button
+                className="btn btn-primary"
+                onClick={handleSaveAndExit}
+                disabled={saveStatus === 'saving'}
+              >
+                完成
               </button>
             </>
           ) : (
-            <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
-              编辑
-            </button>
+            <>
+              <button
+                className="btn btn-outline btn-danger"
+                onClick={handleDelete}
+              >
+                删除
+              </button>
+              <button className="btn btn-primary" onClick={() => setIsEditing(true)}>
+                编辑
+              </button>
+            </>
           )}
         </div>
       </header>
@@ -105,7 +330,7 @@ function DocumentView() {
           <textarea
             className="document-view__editor"
             value={editContent}
-            onChange={e => setEditContent(e.target.value)}
+            onChange={handleContentChange}
             placeholder="开始编写..."
           />
         ) : (

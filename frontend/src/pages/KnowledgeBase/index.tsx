@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Outlet, useNavigate } from "react-router-dom";
-import { ResizableSidebar, CreateDocumentModal } from "@/components";
+import { ResizableSidebar } from "@/components";
 import { fetchFolderById } from "@/api/folders";
-import { fetchDocumentsByFolder } from "@/api/documents";
+import { fetchDocumentsByFolder, createDocument } from "@/api/documents";
 import type { Folder, Document } from "@/types";
 import "./KnowledgeBase.scss";
 
@@ -13,7 +13,6 @@ function KnowledgeBase() {
   const [folder, setFolder] = useState<Folder | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDocModalOpen, setIsDocModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const loadFolderData = useCallback(async () => {
@@ -41,6 +40,24 @@ function KnowledgeBase() {
     loadFolderData();
   }, [loadFolderData]);
 
+  // 监听文档标题更新事件，精准更新对应文档的标题（不刷新整个列表）
+  useEffect(() => {
+    const handleDocumentTitleUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{ docId: string; title: string }>;
+      const { docId: updatedDocId, title: newTitle } = customEvent.detail;
+
+      // 只更新对应文档的标题
+      setDocuments(prev => prev.map(doc =>
+        doc.id === updatedDocId ? { ...doc, title: newTitle } : doc
+      ));
+    };
+
+    window.addEventListener('document-title-updated', handleDocumentTitleUpdated);
+    return () => {
+      window.removeEventListener('document-title-updated', handleDocumentTitleUpdated);
+    };
+  }, []);
+
   const handleBackToDashboard = () => {
     navigate("/dashboard");
   };
@@ -53,13 +70,24 @@ function KnowledgeBase() {
     navigate(`/${folderId}/${doc.id}`);
   };
 
-  const handleNewDocument = () => {
-    setIsDocModalOpen(true);
-  };
+  const handleNewDocument = async () => {
+    if (!folderId) return;
 
-  const handleDocumentConfirm = (targetFolderId: string) => {
-    // 创建文档后跳转
-    navigate(`/${targetFolderId}`);
+    try {
+      const res = await createDocument({
+        title: '无标题文档',
+        folder_id: folderId
+      });
+      if (res.code === 0) {
+        // 创建成功，跳转到新文档并刷新列表
+        setDocuments(prev => [res.data, ...prev]);
+        navigate(`/${folderId}/${res.data.id}`);
+      } else {
+        console.error('创建文档失败:', res.message);
+      }
+    } catch (error) {
+      console.error('创建文档失败:', error);
+    }
   };
 
   const isDocActive = (doc: Document) => {
@@ -158,14 +186,6 @@ function KnowledgeBase() {
           <Outlet />
         )}
       </main>
-
-      {/* 新建文档弹窗 */}
-      <CreateDocumentModal
-        isOpen={isDocModalOpen}
-        onClose={() => setIsDocModalOpen(false)}
-        onCreateFolder={() => {}}
-        onConfirm={handleDocumentConfirm}
-      />
     </div>
   );
 }

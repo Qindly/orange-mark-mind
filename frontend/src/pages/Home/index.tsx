@@ -30,15 +30,12 @@ function Home() {
           <div className="hero__image">
             <div className="hero__illustration">
               <div className="illustration-card illustration-card--1">
-                <span>📝</span>
                 <p>文档编辑</p>
               </div>
               <div className="illustration-card illustration-card--2">
-                <span>🗂️</span>
                 <p>知识库</p>
               </div>
               <div className="illustration-card illustration-card--3">
-                <span>👥</span>
                 <p>团队协作</p>
               </div>
             </div>
@@ -52,22 +49,18 @@ function Home() {
           <h2 className="features__title">核心功能</h2>
           <div className="features__grid">
             <div className="feature-card">
-              <div className="feature-card__icon">📄</div>
               <h3>Markdown 编辑</h3>
               <p>强大的 Markdown 编辑器，支持实时预览</p>
             </div>
             <div className="feature-card">
-              <div className="feature-card__icon">🧠</div>
               <h3>思维导图</h3>
               <p>可视化思维导图，梳理知识脉络</p>
             </div>
             <div className="feature-card">
-              <div className="feature-card__icon">🤖</div>
               <h3>AI 助手</h3>
               <p>智能 AI 辅助，提升创作效率</p>
             </div>
             <div className="feature-card">
-              <div className="feature-card__icon">🔒</div>
               <h3>数据安全</h3>
               <p>端到端加密，保障数据隐私</p>
             </div>

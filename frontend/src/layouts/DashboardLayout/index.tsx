@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import Sidebar from '@/layouts/Sidebar';
+import { Modal, SettingsPanel } from '@/components';
 import { logout } from '@/api/auth';
 import type { UserInfo } from '@/types';
 import './DashboardLayout.scss';
@@ -9,6 +10,7 @@ function DashboardLayout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getUserInfo = (): UserInfo | null => {
@@ -59,6 +61,11 @@ function DashboardLayout() {
     navigate('/admin');
   };
 
+  const handleSettings = () => {
+    setShowDropdown(false);
+    setShowSettings(true);
+  };
+
   return (
     <div className="dashboard-layout">
       {/* A 部分：顶部导航栏 */}
@@ -94,15 +101,21 @@ function DashboardLayout() {
                         className="dashboard-layout__dropdown-item"
                         onClick={handleAdminPanel}
                       >
-                        🛠️ 管理面板
+                        管理面板
                       </button>
                     )}
+                    <button
+                      className="dashboard-layout__dropdown-item"
+                      onClick={handleSettings}
+                    >
+                      设置
+                    </button>
                     <button
                       className="dashboard-layout__dropdown-item dashboard-layout__dropdown-item--danger"
                       onClick={handleLogout}
                       disabled={loading}
                     >
-                      {loading ? '退出中...' : '🚪 退出登录'}
+                      {loading ? '退出中...' : '退出登录'}
                     </button>
                   </div>
                 )}
@@ -122,9 +135,22 @@ function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      <Modal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        title="设置"
+        width={560}
+      >
+        <SettingsPanel
+          onChangePassword={() => {
+            // TODO: 实现修改密码功能
+            console.log('Change password clicked');
+          }}
+        />
+      </Modal>
     </div>
   );
 }
 
 export default DashboardLayout;
-

@@ -153,7 +153,6 @@ function KnowledgeBase() {
 
         {/* 知识库标题 */}
         <div className="kb-header">
-          <span className="kb-header__icon">📁</span>
           <span className="kb-header__title">{folder.name}</span>
           <button className="kb-header__more" onClick={handleEditFolder}>•••</button>
         </div>
@@ -161,7 +160,6 @@ function KnowledgeBase() {
         {/* 搜索和添加 */}
         <div className="kb-search">
           <div className="kb-search__input-wrapper">
-            <span className="kb-search__icon">🔍</span>
             <input
               type="text"
               className="kb-search__input"
@@ -266,7 +264,6 @@ function KBWelcome({
       <header className="kb-welcome__header">
         <div className="kb-welcome__info">
           <div className="kb-welcome__title-row">
-            <span className="kb-welcome__icon">📁</span>
             <h1 className="kb-welcome__title">{folder.name}</h1>
           </div>
           <div className="kb-welcome__stats">
@@ -275,7 +272,7 @@ function KBWelcome({
           </div>
         </div>
         <div className="kb-welcome__actions">
-          <button className="btn btn-outline">☆ 收藏</button>
+          <button className="btn btn-outline">收藏</button>
           <button className="btn btn-outline">分享</button>
           <button className="btn btn-outline">•••</button>
         </div>

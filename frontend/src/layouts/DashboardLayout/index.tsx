@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import Sidebar from '@/layouts/Sidebar';
+import { Modal } from '@/components';
 import { logout } from '@/api/auth';
 import type { UserInfo } from '@/types';
 import './DashboardLayout.scss';
@@ -9,6 +10,7 @@ function DashboardLayout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getUserInfo = (): UserInfo | null => {
@@ -59,6 +61,11 @@ function DashboardLayout() {
     navigate('/admin');
   };
 
+  const handleSettings = () => {
+    setShowDropdown(false);
+    setShowSettings(true);
+  };
+
   return (
     <div className="dashboard-layout">
       {/* A 部分：顶部导航栏 */}
@@ -98,6 +105,12 @@ function DashboardLayout() {
                       </button>
                     )}
                     <button
+                      className="dashboard-layout__dropdown-item"
+                      onClick={handleSettings}
+                    >
+                      ⚙️ 设置
+                    </button>
+                    <button
                       className="dashboard-layout__dropdown-item dashboard-layout__dropdown-item--danger"
                       onClick={handleLogout}
                       disabled={loading}
@@ -122,9 +135,22 @@ function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* 设置弹窗 */}
+      <Modal
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        title="设置"
+        width={560}
+      >
+        <div className="settings-placeholder">
+          <span className="settings-placeholder__icon">🚧</span>
+          <h3>功能开发中</h3>
+          <p>设置功能正在开发中，敬请期待...</p>
+        </div>
+      </Modal>
     </div>
   );
 }
 
 export default DashboardLayout;
-

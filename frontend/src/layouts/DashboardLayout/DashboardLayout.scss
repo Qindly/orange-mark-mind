@@ -146,3 +146,27 @@
     height: 100%; // 填满父容器高度
   }
 }
+
+// 设置占位符
+.settings-placeholder {
+  text-align: center;
+  padding: $spacing-xl * 2;
+  color: $color-text-light;
+
+  &__icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: $spacing-md;
+  }
+
+  h3 {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-text;
+    margin-bottom: $spacing-sm;
+  }
+
+  p {
+    font-size: $font-size-base;
+  }
+}

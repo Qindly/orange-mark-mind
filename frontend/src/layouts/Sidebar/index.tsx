@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SidebarSearch, SidebarMenu, SidebarFolders, SidebarFooter } from './components';
+import { SidebarSearch, SidebarMenu, SidebarFolders } from './components';
 import { CreateDocumentModal, CreateFolderModal } from '@/components';
 import { createFolder } from '@/api/folders';
 import { createDocument } from '@/api/documents';
@@ -97,8 +97,6 @@ function Sidebar() {
           onAddFolder={handleCreateFolder}
           refreshTrigger={folderRefreshTrigger}
         />
-
-        <SidebarFooter />
 
         <div
           className="sidebar__resizer"

@@ -10,3 +10,4 @@ export { default as CreateDocumentModal } from './common/CreateDocumentModal';
 export { default as CreateFolderModal } from './common/CreateFolderModal';
 export { default as EditFolderModal } from './common/EditFolderModal';
 export { default as ResizableSidebar } from './common/ResizableSidebar';
+export { default as SettingsPanel } from './common/SettingsPanel';

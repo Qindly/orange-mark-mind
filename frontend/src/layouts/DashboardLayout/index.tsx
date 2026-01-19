@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import Sidebar from '@/layouts/Sidebar';
-import { Modal } from '@/components';
+import { Modal, SettingsPanel } from '@/components';
 import { logout } from '@/api/auth';
 import type { UserInfo } from '@/types';
 import './DashboardLayout.scss';
@@ -136,17 +136,18 @@ function DashboardLayout() {
         </main>
       </div>
 
-      {/* 设置弹窗 */}
       <Modal
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
         title="设置"
         width={560}
       >
-        <div className="settings-placeholder">
-          <h3>功能开发中</h3>
-          <p>设置功能正在开发中，敬请期待...</p>
-        </div>
+        <SettingsPanel
+          onChangePassword={() => {
+            // TODO: 实现修改密码功能
+            console.log('Change password clicked');
+          }}
+        />
       </Modal>
     </div>
   );

@@ -1,0 +1,154 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.settings-panel {
+    &__section {
+        margin-bottom: $spacing-lg;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__section-title {
+        font-size: $font-size-base;
+        font-weight: 600;
+        color: $color-text;
+        margin-bottom: $spacing-md;
+        padding-bottom: $spacing-sm;
+        border-bottom: 1px solid $color-border-light;
+    }
+
+    &__info-grid {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-md;
+    }
+
+    &__info-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $spacing-sm 0;
+
+        &--action {
+            padding-right: 0;
+        }
+    }
+
+    &__info-label {
+        font-size: $font-size-sm;
+        color: $color-text-secondary;
+        flex-shrink: 0;
+        min-width: 80px;
+    }
+
+    &__info-value {
+        font-size: $font-size-sm;
+        color: $color-text;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    // 角色徽章
+    &__role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px $spacing-sm;
+        border-radius: $radius-full;
+        font-size: $font-size-xs;
+        font-weight: 500;
+
+        &--admin {
+            background: linear-gradient(135deg, #F5A623 0%, #E09000 100%);
+            color: white;
+        }
+
+        &--user {
+            background: $color-bg-gray;
+            color: $color-text-secondary;
+        }
+
+        &--guest {
+            background: $color-border-light;
+            color: $color-text-light;
+        }
+    }
+
+    // 版本标签
+    &__version-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px $spacing-sm;
+        background: $color-bg-gray;
+        color: $color-text-secondary;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+    }
+
+    // 主题指示器
+    &__theme-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: $spacing-xs;
+        padding: 4px $spacing-sm;
+        border-radius: $radius-full;
+        font-size: $font-size-sm;
+
+        &--light {
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%);
+            color: #B8860B;
+        }
+
+        &--dark {
+            background: linear-gradient(135deg, #2D3748 0%, #1A202C 100%);
+            color: #E2E8F0;
+        }
+    }
+
+    &__theme-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        .settings-panel__theme-indicator--light & {
+            background: #FFD93D;
+            box-shadow: 0 0 6px rgba(255, 217, 61, 0.6);
+        }
+
+        .settings-panel__theme-indicator--dark & {
+            background: #A0AEC0;
+            box-shadow: 0 0 6px rgba(160, 174, 192, 0.4);
+        }
+    }
+
+    // 修改密码按钮
+    &__change-password-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: $spacing-xs $spacing-md;
+        background: transparent;
+        color: $color-primary;
+        border: 1px solid $color-primary;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: $color-primary;
+            color: white;
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+}

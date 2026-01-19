@@ -25,6 +25,18 @@ function StartPage() {
     loadDocuments();
   }, [activeTab]);
 
+  // 监听知识库删除事件，刷新文档列表
+  useEffect(() => {
+    const handleFolderDeleted = () => {
+      loadDocuments();
+    };
+
+    window.addEventListener('folder-deleted', handleFolderDeleted);
+    return () => {
+      window.removeEventListener('folder-deleted', handleFolderDeleted);
+    };
+  }, []);
+
   const loadDocuments = async () => {
     setLoading(true);
     try {

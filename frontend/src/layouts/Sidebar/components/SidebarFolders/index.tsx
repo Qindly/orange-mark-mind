@@ -70,6 +70,8 @@ function SidebarFolders({ onAddFolder, refreshTrigger }: SidebarFoldersProps) {
       // 从本地列表中移除
       setFolders(prev => prev.filter(f => f.id !== editingFolder.id));
       setEditingFolder(null);
+      // 触发事件通知其他组件刷新
+      window.dispatchEvent(new CustomEvent('folder-deleted'));
     } else {
       throw new Error(res.message);
     }

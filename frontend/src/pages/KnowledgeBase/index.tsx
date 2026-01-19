@@ -112,6 +112,8 @@ function KnowledgeBase() {
 
     const res = await deleteFolder(folderId);
     if (res.code === 0) {
+      // 触发事件通知其他组件刷新
+      window.dispatchEvent(new CustomEvent('folder-deleted'));
       // 删除成功，跳转到控制台
       navigate('/dashboard');
     } else {

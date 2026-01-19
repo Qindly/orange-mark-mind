@@ -1,10 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SidebarSearch, SidebarMenu, SidebarFolders, SidebarFooter } from './components';
 import { CreateDocumentModal, CreateFolderModal } from '@/components';
 import { createFolder } from '@/api/folders';
+import { createDocument } from '@/api/documents';
 import './Sidebar.scss';
 
 function Sidebar() {
+  const navigate = useNavigate();
   const [sidebarWidth, setSidebarWidth] = useState(220);
   const [isResizing, setIsResizing] = useState(false);
   const [isDocModalOpen, setIsDocModalOpen] = useState(false);
@@ -50,9 +53,18 @@ function Sidebar() {
     setIsFolderModalOpen(true);
   };
 
-  const handleDocumentConfirm = (folderId: string) => {
-    // TODO: 创建文档并跳转到编辑页
-    console.log('Create document in folder:', folderId);
+  const handleDocumentConfirm = async (folderId: string) => {
+    try {
+      const res = await createDocument({ title: '无标题文档', folder_id: folderId });
+      if (res.code === 0) {
+        // 创建成功，跳转到文档编辑页
+        navigate(`/${folderId}/${res.data.id}`);
+      } else {
+        console.error('创建文档失败:', res.message);
+      }
+    } catch (error) {
+      console.error('创建文档失败:', error);
+    }
   };
 
   const handleFolderConfirm = async (name: string, description: string) => {

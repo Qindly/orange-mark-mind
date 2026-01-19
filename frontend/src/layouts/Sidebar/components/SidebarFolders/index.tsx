@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchFolders, updateFolder } from "@/api/folders";
+import { fetchFolders, updateFolder, deleteFolder } from "@/api/folders";
 import { EditFolderModal } from "@/components";
 import type { Folder } from "@/types";
 import "./SidebarFolders.scss";
@@ -62,9 +62,17 @@ function SidebarFolders({ onAddFolder, refreshTrigger }: SidebarFoldersProps) {
     }
   };
 
-  const handleDeleteFolder = () => {
-    // TODO: 实现删除知识库功能
-    console.log('Delete folder - not implemented yet');
+  const handleDeleteFolder = async () => {
+    if (!editingFolder) return;
+
+    const res = await deleteFolder(editingFolder.id);
+    if (res.code === 0) {
+      // 从本地列表中移除
+      setFolders(prev => prev.filter(f => f.id !== editingFolder.id));
+      setEditingFolder(null);
+    } else {
+      throw new Error(res.message);
+    }
   };
 
   return (

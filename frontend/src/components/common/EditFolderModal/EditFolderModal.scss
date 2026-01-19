@@ -84,4 +84,35 @@
         padding-top: $spacing-lg;
         border-top: 1px solid $color-border-light;
     }
+
+    // 删除确认界面
+    &__confirm {
+        text-align: center;
+        padding: $spacing-lg 0;
+    }
+
+    &__confirm-icon {
+        font-size: 48px;
+        margin-bottom: $spacing-md;
+    }
+
+    &__confirm-title {
+        font-size: $font-size-lg;
+        font-weight: 600;
+        color: $color-text;
+        margin-bottom: $spacing-sm;
+    }
+
+    &__confirm-text {
+        font-size: $font-size-sm;
+        color: $color-text-light;
+        margin-bottom: $spacing-xl;
+        line-height: 1.6;
+    }
+
+    &__confirm-actions {
+        display: flex;
+        justify-content: center;
+        gap: $spacing-md;
+    }
 }

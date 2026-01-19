@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { ResizableSidebar, EditFolderModal } from "@/components";
-import { fetchFolderById, updateFolder } from "@/api/folders";
+import { fetchFolderById, updateFolder, deleteFolder } from "@/api/folders";
 import { fetchDocumentsByFolder, createDocument } from "@/api/documents";
 import type { Folder, Document } from "@/types";
 import "./KnowledgeBase.scss";
@@ -107,9 +107,16 @@ function KnowledgeBase() {
     }
   };
 
-  const handleDeleteFolder = () => {
-    // TODO: 实现删除知识库功能
-    console.log('Delete folder - not implemented yet');
+  const handleDeleteFolder = async () => {
+    if (!folderId) return;
+
+    const res = await deleteFolder(folderId);
+    if (res.code === 0) {
+      // 删除成功，跳转到控制台
+      navigate('/dashboard');
+    } else {
+      throw new Error(res.message);
+    }
   };
 
   const isDocActive = (doc: Document) => {

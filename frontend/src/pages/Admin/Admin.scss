@@ -1,0 +1,52 @@
+@use '../../styles/variables' as *;
+
+.admin-page {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    &__header {
+        margin-bottom: $spacing-xl;
+    }
+
+    &__title {
+        font-size: 28px;
+        font-weight: 600;
+        color: $color-text;
+        margin-bottom: $spacing-xs;
+    }
+
+    &__subtitle {
+        font-size: $font-size-base;
+        color: $color-text-light;
+    }
+
+    &__content {
+        background: $color-bg-white;
+        border-radius: $radius-lg;
+        border: 1px solid $color-border-light;
+        padding: $spacing-xl;
+    }
+
+    &__placeholder {
+        text-align: center;
+        padding: $spacing-xl * 2;
+        color: $color-text-light;
+
+        &-icon {
+            font-size: 64px;
+            display: block;
+            margin-bottom: $spacing-lg;
+        }
+
+        h2 {
+            font-size: $font-size-xl;
+            font-weight: 600;
+            color: $color-text;
+            margin-bottom: $spacing-sm;
+        }
+
+        p {
+            font-size: $font-size-base;
+        }
+    }
+}

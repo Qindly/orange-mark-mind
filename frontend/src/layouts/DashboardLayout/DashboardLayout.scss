@@ -4,7 +4,7 @@
 .dashboard-layout {
   min-height: 100vh;
   background: $color-bg;
-  
+
   // A 部分：顶部导航栏
   &__header {
     height: 56px;
@@ -14,43 +14,55 @@
     top: 0;
     z-index: 100;
   }
-  
+
   &__header-content {
     @include flex-between;
     height: 100%;
     max-width: 100%;
     padding: 0 $spacing-lg;
   }
-  
+
   &__brand {
     display: flex;
     align-items: center;
     gap: $spacing-sm;
     text-decoration: none;
   }
-  
+
   &__logo-icon {
     font-size: 28px;
   }
-  
+
   &__logo-text {
     font-size: $font-size-xl;
     font-weight: 600;
     @include gradient-text;
   }
-  
+
   &__header-right {
     display: flex;
     align-items: center;
     gap: $spacing-md;
   }
-  
+
+  &__user-wrapper {
+    position: relative;
+  }
+
   &__user {
     display: flex;
     align-items: center;
     gap: $spacing-sm;
+    cursor: pointer;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-md;
+    transition: background $transition-fast;
+
+    &:hover {
+      background: $color-bg-gray;
+    }
   }
-  
+
   &__user-avatar {
     width: 32px;
     height: 32px;
@@ -61,33 +73,61 @@
     font-size: $font-size-sm;
     font-weight: 500;
   }
-  
+
   &__user-name {
     font-size: $font-size-sm;
     color: $color-text;
   }
-  
-  &__logout-btn {
-    padding: $spacing-xs $spacing-md;
-    font-size: $font-size-sm;
-    color: $color-text-secondary;
-    background: transparent;
-    border: 1px solid $color-border;
+
+  &__user-arrow {
+    font-size: 10px;
+    color: $color-text-light;
+    margin-left: $spacing-xs;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: $spacing-xs;
+    min-width: 160px;
+    background: $color-bg-white;
+    border: 1px solid $color-border-light;
     border-radius: $radius-md;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 200;
+    overflow: hidden;
+  }
+
+  &__dropdown-item {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
+    color: $color-text;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    transition: all $transition-fast;
-    
+    text-align: left;
+    transition: background $transition-fast;
+
     &:hover:not(:disabled) {
-      border-color: $color-primary;
-      color: $color-primary;
+      background: $color-bg-gray;
     }
-    
+
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
+
+    &--danger {
+      color: #ff4d4f;
+
+      &:hover:not(:disabled) {
+        background: rgba(255, 77, 79, 0.1);
+      }
+    }
   }
-  
+
   // B 部分：主体区域（左右布局）
   &__body {
     flex: 1;
@@ -95,7 +135,7 @@
     overflow: hidden; // 防止任何滚动溢出到父级
     height: calc(100vh - 56px); // 固定高度 = 视口高度 - 顶部导航栏
   }
-  
+
   // D 部分：内容区（独立滚动）
   &__content {
     flex: 1;

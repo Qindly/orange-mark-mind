@@ -13,20 +13,20 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  
+
   &__header {
     @include flex-between;
     padding: $spacing-lg $spacing-xl;
     border-bottom: 1px solid $color-border-light;
     flex-shrink: 0;
   }
-  
+
   &__title {
     font-size: $font-size-2xl;
     font-weight: 700;
     color: $color-text;
   }
-  
+
   &__title-input {
     font-size: $font-size-2xl;
     font-weight: 700;
@@ -37,32 +37,50 @@
     padding: $spacing-xs 0;
     flex: 1;
     min-width: 200px;
-    
+
     &:focus {
       outline: none;
     }
-    
+
     &::placeholder {
       color: $color-text-light;
     }
   }
-  
+
   &__actions {
     display: flex;
     align-items: center;
     gap: $spacing-sm;
-    
+
     .doc-star {
       font-size: 18px;
     }
+
+    .save-status {
+      font-size: $font-size-sm;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $radius-sm;
+
+      &--saving {
+        color: $color-primary;
+      }
+
+      &--saved {
+        color: #52c41a;
+      }
+
+      &--error {
+        color: #ff4d4f;
+      }
+    }
   }
-  
+
   &__content {
     flex: 1;
     overflow-y: auto;
     padding: $spacing-xl;
   }
-  
+
   &__editor {
     width: 100%;
     height: 100%;
@@ -74,13 +92,13 @@
     font-size: $font-size-sm;
     line-height: 1.8;
     resize: none;
-    
+
     &:focus {
       outline: none;
       border-color: $color-primary;
     }
   }
-  
+
   &__body {
     max-width: 100%;
     margin: 0 auto;

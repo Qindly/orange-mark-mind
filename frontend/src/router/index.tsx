@@ -7,7 +7,7 @@ import Register from '@/pages/Register';
 import Admin from '@/pages/Admin';
 
 // Dashboard Layout and Pages
-import { DashboardLayout } from '@/layouts';
+import { DashboardLayout, AdminLayout } from '@/layouts';
 import StartPage from '@/pages/Dashboard/StartPage';
 import FavoritesPage from '@/pages/Dashboard/FavoritesPage';
 import TrashPage from '@/pages/Dashboard/TrashPage';
@@ -116,7 +116,7 @@ const router = createBrowserRouter([
     path: '/admin',
     element: (
       <AdminRoute>
-        <DashboardLayout />
+        <AdminLayout />
       </AdminRoute>
     ),
     children: [

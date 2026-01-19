@@ -41,17 +41,23 @@ function KnowledgeBase() {
     loadFolderData();
   }, [loadFolderData]);
 
-  // 监听文档更新事件，刷新文档列表
+  // 监听文档标题更新事件，精准更新对应文档的标题（不刷新整个列表）
   useEffect(() => {
-    const handleDocumentUpdated = () => {
-      loadFolderData();
+    const handleDocumentTitleUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{ docId: string; title: string }>;
+      const { docId: updatedDocId, title: newTitle } = customEvent.detail;
+
+      // 只更新对应文档的标题
+      setDocuments(prev => prev.map(doc =>
+        doc.id === updatedDocId ? { ...doc, title: newTitle } : doc
+      ));
     };
 
-    window.addEventListener('document-updated', handleDocumentUpdated);
+    window.addEventListener('document-title-updated', handleDocumentTitleUpdated);
     return () => {
-      window.removeEventListener('document-updated', handleDocumentUpdated);
+      window.removeEventListener('document-title-updated', handleDocumentTitleUpdated);
     };
-  }, [loadFolderData]);
+  }, []);
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");

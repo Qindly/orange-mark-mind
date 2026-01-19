@@ -65,8 +65,10 @@ function DocumentView() {
     if (!docId) return;
 
     // 检查内容是否有变化
-    if (title === originalContentRef.current.title &&
-      content === originalContentRef.current.content) {
+    const titleChanged = title !== originalContentRef.current.title;
+    const contentChanged = content !== originalContentRef.current.content;
+
+    if (!titleChanged && !contentChanged) {
       return; // 内容没变，不需要保存
     }
 
@@ -78,21 +80,27 @@ function DocumentView() {
       });
 
       if (res.code === 0) {
+        const newTitle = title.trim() || '无标题文档';
+
+        // 只在标题发生变化时触发事件，通知父组件更新对应文档的标题
+        if (titleChanged) {
+          window.dispatchEvent(new CustomEvent('document-title-updated', {
+            detail: { docId, title: newTitle }
+          }));
+        }
+
         // 更新原始内容引用
         originalContentRef.current = {
-          title: title.trim() || '无标题文档',
+          title: newTitle,
           content: content,
         };
         // 更新本地 document 状态
         setDocument(prev => prev ? {
           ...prev,
-          title: title.trim() || '无标题文档',
+          title: newTitle,
           content: content,
         } : null);
         setSaveStatus('saved');
-
-        // 触发文档更新事件，通知父组件刷新列表
-        window.dispatchEvent(new CustomEvent('document-updated'));
 
         // 3 秒后隐藏"已保存"状态
         if (savedStatusTimerRef.current) {
@@ -147,26 +155,34 @@ function DocumentView() {
       clearTimeout(autoSaveTimerRef.current);
     }
 
+    const newTitle = editTitle.trim() || '无标题文档';
+    const titleChanged = newTitle !== originalContentRef.current.title;
+
     setSaveStatus('saving');
     try {
       const res = await updateDocument(docId, {
-        title: editTitle.trim() || '无标题文档',
+        title: newTitle,
         content: editContent,
       });
 
       if (res.code === 0) {
+        // 只在标题发生变化时触发事件
+        if (titleChanged) {
+          window.dispatchEvent(new CustomEvent('document-title-updated', {
+            detail: { docId, title: newTitle }
+          }));
+        }
+
         originalContentRef.current = {
-          title: editTitle.trim() || '无标题文档',
+          title: newTitle,
           content: editContent,
         };
         setDocument(prev => prev ? {
           ...prev,
-          title: editTitle.trim() || '无标题文档',
+          title: newTitle,
           content: editContent,
         } : null);
         setSaveStatus('saved');
-        // 触发文档更新事件，通知父组件刷新列表
-        window.dispatchEvent(new CustomEvent('document-updated'));
         setIsEditing(false);
       } else {
         console.error('保存文档失败:', res.message);

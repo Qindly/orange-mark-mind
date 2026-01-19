@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ActionCard, DocumentItem, TabGroup, PageHeader, CreateDocumentModal, CreateFolderModal } from '@/components';
 import { fetchRecentDocuments } from '@/api/documents';
+import { createFolder } from '@/api/folders';
 import type { Document } from '@/types';
 import './StartPage.scss';
 
@@ -64,9 +65,18 @@ function StartPage() {
     navigate(`/${folderId}`);
   };
 
-  const handleFolderConfirm = (name: string, description: string) => {
-    console.log('Create folder:', name, description);
-    // TODO: 调用 API 创建文件夹
+  const handleFolderConfirm = async (name: string, description: string) => {
+    try {
+      const res = await createFolder({ name, description: description || undefined });
+      if (res.code === 0) {
+        // 创建成功，跳转到新建的知识库
+        navigate(`/${res.data.id}`);
+      } else {
+        console.error('创建知识库失败:', res.message);
+      }
+    } catch (error) {
+      console.error('创建知识库失败:', error);
+    }
   };
 
   const handleDocumentClick = (doc: Document) => {
@@ -79,22 +89,22 @@ function StartPage() {
 
       {/* 快捷操作 */}
       <section className="start-page__actions">
-        <ActionCard 
-          icon="📄" 
-          title="新建文档" 
-          description="文档、表格、画板、数据表" 
+        <ActionCard
+          icon="📄"
+          title="新建文档"
+          description="文档、表格、画板、数据表"
           onClick={handleNewDocument}
         />
-        <ActionCard 
-          icon="📚" 
-          title="新建知识库" 
-          description="使用知识库整理知识" 
+        <ActionCard
+          icon="📚"
+          title="新建知识库"
+          description="使用知识库整理知识"
           onClick={handleNewFolder}
         />
-        <ActionCard 
-          icon="🎨" 
-          title="模板中心" 
-          description="从模板中获取灵感" 
+        <ActionCard
+          icon="🎨"
+          title="模板中心"
+          description="从模板中获取灵感"
           onClick={handleTemplates}
         />
       </section>
@@ -102,12 +112,12 @@ function StartPage() {
       {/* 文档列表 */}
       <section className="start-page__documents">
         <h2 className="start-page__section-title">文档</h2>
-        <TabGroup 
-          tabs={documentTabs} 
+        <TabGroup
+          tabs={documentTabs}
           defaultActiveKey="edited"
           onChange={setActiveTab}
         />
-        
+
         <div className="start-page__doc-list">
           {loading ? (
             <div className="start-page__loading">加载中...</div>

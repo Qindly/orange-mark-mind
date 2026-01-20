@@ -163,4 +163,41 @@
         border-radius: $radius-md;
         margin: $spacing-md 0;
     }
+
+    // Mermaid 图表
+    .mermaid-diagram {
+        display: flex;
+        justify-content: center;
+        margin: $spacing-md 0;
+        padding: $spacing-md;
+        background-color: #fafafa;
+        border-radius: $radius-md;
+        overflow-x: auto;
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+
+    .mermaid-error {
+        margin: $spacing-md 0;
+        padding: $spacing-md;
+        background-color: #fff2f0;
+        border: 1px solid #ffccc7;
+        border-radius: $radius-md;
+        color: #ff4d4f;
+
+        span {
+            display: block;
+            margin-bottom: $spacing-sm;
+            font-weight: 600;
+        }
+
+        pre {
+            background-color: rgba(0, 0, 0, 0.02);
+            color: $color-text-light;
+            font-size: $font-size-sm;
+        }
+    }
 }

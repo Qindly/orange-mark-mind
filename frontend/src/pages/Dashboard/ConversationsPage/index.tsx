@@ -3,11 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     getConversation,
     createConversation,
-    sendMessage,
+    sendMessageStream,
     updateConversationTitle
 } from '@/api/conversations';
 import { getAIConfigs } from '@/api/ai';
-import type { ConversationDetail, Message } from '@/api/conversations';
+import type { ConversationDetail, Message, StreamChunk } from '@/api/conversations';
 import type { AIConfig } from '@/types/ai';
 import './ConversationsPage.scss';
 
@@ -26,6 +26,7 @@ function ConversationsPage() {
     const [editTitle, setEditTitle] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [streamingContent, setStreamingContent] = useState<string>('');
 
     useEffect(() => {
         loadConfigs();
@@ -102,6 +103,8 @@ function ConversationsPage() {
                     convId = res.data.id;
                     setConversation(res.data);
                     navigate(`/dashboard/conversations/${convId}`, { replace: true });
+                } else {
+                    return;
                 }
             } catch (error) {
                 console.error('Failed to create conversation:', error);
@@ -109,9 +112,12 @@ function ConversationsPage() {
             }
         }
 
+        // At this point convId is definitely defined
+        const currentConvId = convId;
+
         const userMessage: Message = {
             id: Date.now(),
-            conversation_id: convId,
+            conversation_id: currentConvId,
             role: 'user',
             content: inputValue,
             created_at: new Date().toISOString(),
@@ -120,20 +126,61 @@ function ConversationsPage() {
         setMessages(prev => [...prev, userMessage]);
         setInputValue('');
         setSending(true);
+        setStreamingContent('');
+
+        // Add placeholder for AI message
+        const aiMessagePlaceholder: Message = {
+            id: Date.now() + 1,
+            conversation_id: currentConvId,
+            role: 'assistant',
+            content: '',
+            model: selectedModel,
+            created_at: new Date().toISOString(),
+        };
+        setMessages(prev => [...prev, aiMessagePlaceholder]);
 
         try {
-            const res = await sendMessage(convId, {
-                content: inputValue,
-                model: selectedModel,
-            });
+            const token = localStorage.getItem('access_token') || '';
+            let fullContent = '';
 
-            if (res.code === 0) {
-                loadConversation(convId);
-            }
+            await sendMessageStream(
+                currentConvId,
+                {
+                    content: inputValue,
+                    model: selectedModel,
+                },
+                (chunk: StreamChunk) => {
+                    if (chunk.content) {
+                        fullContent += chunk.content;
+                        setStreamingContent(fullContent);
+                        // Update the last message with streaming content
+                        setMessages(prev => {
+                            const newMessages = [...prev];
+                            if (newMessages.length > 0) {
+                                newMessages[newMessages.length - 1] = {
+                                    ...newMessages[newMessages.length - 1],
+                                    content: fullContent,
+                                };
+                            }
+                            return newMessages;
+                        });
+                    }
+                    if (chunk.error) {
+                        console.error('Stream error:', chunk.error);
+                    }
+                },
+                token
+            );
+
+            // Reload conversation to get the saved message
+            loadConversation(currentConvId);
         } catch (error) {
             console.error('Failed to send message:', error);
+            // Remove the placeholder message on error
+            setMessages(prev => prev.slice(0, -1));
         } finally {
             setSending(false);
+            setStreamingContent('');
         }
     };
 

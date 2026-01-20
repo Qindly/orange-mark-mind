@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { UserInfo } from '@/types';
 import AIProviderSettings from './AIProviderSettings';
 import DefaultSummaryModel from './DefaultSummaryModel';
+import ContextSettings from './ContextSettings';
 import './SettingsPanel.scss';
 
 interface SystemInfo {
@@ -290,6 +291,7 @@ function SettingsPanel({ onChangePassword }: SettingsPanelProps) {
                 <h3 className="settings-panel__section-title">AI 配置</h3>
                 <AIProviderSettings />
                 <DefaultSummaryModel />
+                <ContextSettings />
             </section>
         </div>
     );

@@ -109,3 +109,118 @@ export const regenerateMessage = (
 ): Promise<ApiResponse<null>> => {
     return request.post(`/conversations/${conversationId}/messages/${messageId}/regenerate`);
 };
+
+// 流式响应块
+export interface StreamChunk {
+    content?: string;
+    done?: boolean;
+    error?: string;
+}
+
+// 流式发送消息
+export const sendMessageStream = async (
+    conversationId: number,
+    data: SendMessageRequest,
+    onChunk: (chunk: StreamChunk) => void,
+    token: string
+): Promise<void> => {
+    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:60100';
+    const url = `${baseURL}/api/v1/conversations/${conversationId}/messages/stream`;
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+        throw new Error('No reader available');
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+            if (line.startsWith('data: ')) {
+                try {
+                    const chunk: StreamChunk = JSON.parse(line.slice(6));
+                    onChunk(chunk);
+                    if (chunk.done) {
+                        return;
+                    }
+                } catch {
+                    // Ignore parse errors
+                }
+            }
+        }
+    }
+};
+
+// 流式重新生成消息
+export const regenerateMessageStream = async (
+    conversationId: number,
+    onChunk: (chunk: StreamChunk) => void,
+    token: string
+): Promise<void> => {
+    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:60100';
+    const url = `${baseURL}/api/v1/conversations/${conversationId}/messages/regenerate/stream`;
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+        throw new Error('No reader available');
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+            if (line.startsWith('data: ')) {
+                try {
+                    const chunk: StreamChunk = JSON.parse(line.slice(6));
+                    onChunk(chunk);
+                    if (chunk.done) {
+                        return;
+                    }
+                } catch {
+                    // Ignore parse errors
+                }
+            }
+        }
+    }
+};

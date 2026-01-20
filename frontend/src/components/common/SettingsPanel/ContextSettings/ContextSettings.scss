@@ -1,0 +1,75 @@
+@use '../../../../styles/variables' as *;
+
+.context-settings {
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid $color-border-light;
+
+    &__item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: $spacing-sm 0;
+    }
+
+    &__label {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    &__label-text {
+        font-size: $font-size-sm;
+        font-weight: 500;
+        color: $color-text;
+    }
+
+    &__label-hint {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+
+    &__control {
+        flex-shrink: 0;
+    }
+
+    &__input {
+        width: 100px;
+        padding: $spacing-xs $spacing-sm;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        text-align: right;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+        }
+    }
+
+    &__actions {
+        margin-top: $spacing-md;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__save-btn {
+        padding: $spacing-xs $spacing-md;
+        border: none;
+        border-radius: $radius-md;
+        background: $color-primary;
+        color: white;
+        font-size: $font-size-sm;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover:not(:disabled) {
+            background: $color-primary-hover;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+}

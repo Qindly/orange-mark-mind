@@ -1,0 +1,83 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+.default-summary-model {
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid $color-border-light;
+
+    &__loading,
+    &__empty {
+        padding: $spacing-sm 0;
+        font-size: $font-size-sm;
+        color: $color-text-light;
+    }
+
+    &__row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: $spacing-md;
+    }
+
+    &__label {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__label-text {
+        display: block;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        color: $color-text;
+        margin-bottom: 2px;
+    }
+
+    &__label-hint {
+        display: block;
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+
+    &__control {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        flex-shrink: 0;
+    }
+
+    &__select {
+        padding: $spacing-xs $spacing-md;
+        padding-right: $spacing-lg;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        background: white;
+        font-size: $font-size-sm;
+        color: $color-text;
+        cursor: pointer;
+        min-width: 160px;
+        transition: all $transition-fast;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__saving {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+
+    &__provider-hint {
+        margin-top: $spacing-xs;
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+}

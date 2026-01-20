@@ -129,12 +129,19 @@ func main() {
 			admin.DELETE("/users/:id", adminHandler.DeleteUser)
 		}
 
-		// TODO: AI 对话路由
-		// ai := v1.Group("/ai")
-		// ai.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
-		// {
-		//     // AI 对话路由
-		// }
+		// AI 配置路由（需要认证）
+		aiConfigRepo := repository.NewAIConfigRepository(db)
+		aiConfigService := service.NewAIConfigService(aiConfigRepo, cfg.EncryptionKey)
+		aiConfigHandler := handler.NewAIConfigHandler(aiConfigService)
+		aiConfigs := v1.Group("/ai-configs")
+		aiConfigs.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		{
+			aiConfigs.GET("", aiConfigHandler.GetList)
+			aiConfigs.POST("", aiConfigHandler.Create)
+			aiConfigs.PUT("/:id", aiConfigHandler.Update)
+			aiConfigs.DELETE("/:id", aiConfigHandler.Delete)
+			aiConfigs.PUT("/:id/default", aiConfigHandler.SetDefault)
+		}
 	}
 
 	// 启动服务器

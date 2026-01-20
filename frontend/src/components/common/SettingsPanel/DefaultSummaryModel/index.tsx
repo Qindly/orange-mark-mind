@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { AIConfig } from '@/types/ai';
 import { getAIConfigs } from '@/api/ai';
+import { getSetting, updateSetting, SETTING_KEYS } from '@/api/settings';
 import './DefaultSummaryModel.scss';
 
 function DefaultSummaryModel() {
@@ -10,28 +11,34 @@ function DefaultSummaryModel() {
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        loadConfigs();
+        loadData();
     }, []);
 
-    const loadConfigs = async () => {
+    const loadData = async () => {
         try {
             setLoading(true);
-            const res = await getAIConfigs();
-            if (res.code === 0 && res.data) {
+
+            // Load AI configs and saved setting in parallel
+            const [configsRes, settingRes] = await Promise.all([
+                getAIConfigs(),
+                getSetting(SETTING_KEYS.DEFAULT_SUMMARY_MODEL),
+            ]);
+
+            if (configsRes.code === 0 && configsRes.data) {
                 // Find default config
-                const defaultCfg = res.data.find(c => c.is_default);
+                const defaultCfg = configsRes.data.find(c => c.is_default);
                 setDefaultConfig(defaultCfg || null);
 
-                // Load saved preference from localStorage for now
-                const saved = localStorage.getItem('default_summary_model');
-                if (saved && defaultCfg?.available_models.includes(saved)) {
-                    setSelectedModel(saved);
+                // Use saved setting if available and valid
+                const savedModel = settingRes.code === 0 ? settingRes.data?.value : '';
+                if (savedModel && defaultCfg?.available_models.includes(savedModel)) {
+                    setSelectedModel(savedModel);
                 } else if (defaultCfg?.available_models.length) {
                     setSelectedModel(defaultCfg.available_models[0]);
                 }
             }
         } catch (error) {
-            console.error('Failed to load AI configs:', error);
+            console.error('Failed to load data:', error);
         } finally {
             setLoading(false);
         }
@@ -41,13 +48,13 @@ function DefaultSummaryModel() {
         setSelectedModel(model);
         setSaving(true);
 
-        // Save to localStorage for now (backend API to be implemented later)
-        localStorage.setItem('default_summary_model', model);
-
-        // Simulate a brief save delay for UX
-        setTimeout(() => {
+        try {
+            await updateSetting(SETTING_KEYS.DEFAULT_SUMMARY_MODEL, model);
+        } catch (error) {
+            console.error('Failed to save setting:', error);
+        } finally {
             setSaving(false);
-        }, 300);
+        }
     };
 
     if (loading) {

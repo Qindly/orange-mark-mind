@@ -155,6 +155,33 @@ func main() {
 			settings.PUT("/:key", userSettingHandler.Update)
 			settings.DELETE("/:key", userSettingHandler.Delete)
 		}
+
+		// 对话路由（需要认证）
+		convRepo := repository.NewConversationRepository(db)
+		msgRepo := repository.NewMessageRepository(db)
+		convService := service.NewConversationService(convRepo, msgRepo)
+		convHandler := handler.NewConversationHandler(convService)
+		conversations := v1.Group("/conversations")
+		conversations.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		{
+			conversations.GET("", convHandler.GetList)
+			conversations.POST("", convHandler.Create)
+			conversations.GET("/trash", convHandler.GetTrash)
+			conversations.GET("/search", convHandler.Search)
+			conversations.GET("/:id", convHandler.GetByID)
+			conversations.PUT("/:id", convHandler.Update)
+			conversations.DELETE("/:id", convHandler.Delete)
+			conversations.POST("/:id/restore", convHandler.Restore)
+			conversations.POST("/:id/messages", convHandler.SendMessage)
+			conversations.POST("/:id/messages/:msgId/regenerate", convHandler.RegenerateMessage)
+
+			// Streaming routes
+			aiClient := service.NewAIClient()
+			docRepo := repository.NewDocumentRepository(db)
+			streamingHandler := handler.NewStreamingHandler(convService, aiConfigRepo, docRepo, aiClient, cfg.EncryptionKey)
+			conversations.POST("/:id/messages/stream", streamingHandler.StreamMessage)
+			conversations.POST("/:id/messages/regenerate/stream", streamingHandler.StreamRegenerate)
+		}
 	}
 
 	// 启动服务器

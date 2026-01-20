@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { SidebarSearch, SidebarMenu, SidebarFolders } from './components';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { SidebarSearch, SidebarMenu, SidebarFolders, ConversationList } from './components';
 import { CreateDocumentModal, CreateFolderModal } from '@/components';
 import { createFolder } from '@/api/folders';
 import { createDocument } from '@/api/documents';
@@ -8,12 +8,16 @@ import './Sidebar.scss';
 
 function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarWidth, setSidebarWidth] = useState(220);
   const [isResizing, setIsResizing] = useState(false);
   const [isDocModalOpen, setIsDocModalOpen] = useState(false);
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [folderRefreshTrigger, setFolderRefreshTrigger] = useState(0);
   const sidebarRef = useRef<HTMLElement>(null);
+
+  // Determine if we're in conversation mode based on route
+  const isConversationMode = location.pathname.startsWith('/dashboard/conversations');
 
   // 拖拽调整宽度
   const startResizing = useCallback((e: React.MouseEvent) => {
@@ -89,14 +93,20 @@ function Sidebar() {
         style={{ width: sidebarWidth }}
       >
         <div className="sidebar__top">
-          <SidebarSearch onNewDocument={handleNewDocument} />
+          {!isConversationMode && (
+            <SidebarSearch onNewDocument={handleNewDocument} />
+          )}
           <SidebarMenu />
         </div>
 
-        <SidebarFolders
-          onAddFolder={handleCreateFolder}
-          refreshTrigger={folderRefreshTrigger}
-        />
+        {isConversationMode ? (
+          <ConversationList />
+        ) : (
+          <SidebarFolders
+            onAddFolder={handleCreateFolder}
+            refreshTrigger={folderRefreshTrigger}
+          />
+        )}
 
         <div
           className="sidebar__resizer"

@@ -127,21 +127,22 @@ function ConversationsPage() {
             created_at: new Date().toISOString(),
         };
 
-        setMessages(prev => [...prev, userMessage]);
-        setInputValue('');
-        setSending(true);
-        setStreamingContent('');
-
-        // Add placeholder for AI message
+        // Add AI placeholder with unique ID for tracking
+        const aiPlaceholderId = Date.now() + 1;
         const aiMessagePlaceholder: Message = {
-            id: Date.now() + 1,
+            id: aiPlaceholderId,
             conversation_id: currentConvId,
             role: 'assistant',
             content: '',
             model: selectedModel,
             created_at: new Date().toISOString(),
         };
-        setMessages(prev => [...prev, aiMessagePlaceholder]);
+
+        // Add both messages at once to avoid React batching issues
+        setMessages(prev => [...prev, userMessage, aiMessagePlaceholder]);
+        setInputValue('');
+        setSending(true);
+        setStreamingContent('');
 
         try {
             const token = localStorage.getItem('access_token') || '';
@@ -161,17 +162,12 @@ function ConversationsPage() {
                     if (chunk.content) {
                         fullContent += chunk.content;
                         setStreamingContent(fullContent);
-                        // Update the last message with streaming content
-                        setMessages(prev => {
-                            const newMessages = [...prev];
-                            if (newMessages.length > 0) {
-                                newMessages[newMessages.length - 1] = {
-                                    ...newMessages[newMessages.length - 1],
-                                    content: fullContent,
-                                };
-                            }
-                            return newMessages;
-                        });
+                        // Update the AI message by ID instead of array position
+                        setMessages(prev => prev.map(msg =>
+                            msg.id === aiPlaceholderId
+                                ? { ...msg, content: fullContent }
+                                : msg
+                        ));
                     }
                     if (chunk.error) {
                         console.error('Stream error:', chunk.error);
@@ -182,13 +178,18 @@ function ConversationsPage() {
 
             // Reload conversation to get the saved message
             loadConversation(currentConvId);
+
+            // Dispatch custom event to refresh sidebar conversation list
+            window.dispatchEvent(new CustomEvent('conversation-updated'));
         } catch (error) {
             console.error('Failed to send message:', error);
             // Remove the placeholder message on error
-            setMessages(prev => prev.slice(0, -1));
+            setMessages(prev => prev.filter(msg => msg.id !== aiPlaceholderId));
         } finally {
             setSending(false);
             setStreamingContent('');
+            // Clear selected documents after sending
+            setSelectedDocs([]);
         }
     };
 

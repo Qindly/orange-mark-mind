@@ -20,6 +20,17 @@ function ConversationList({ onNewConversation }: ConversationListProps) {
         loadConversations();
     }, []);
 
+    // Listen for conversation updates from chat page
+    useEffect(() => {
+        const handleConversationUpdated = () => {
+            loadConversations();
+        };
+        window.addEventListener('conversation-updated', handleConversationUpdated);
+        return () => {
+            window.removeEventListener('conversation-updated', handleConversationUpdated);
+        };
+    }, []);
+
     const loadConversations = async () => {
         try {
             setLoading(true);

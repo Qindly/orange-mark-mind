@@ -108,14 +108,14 @@ func (h *StreamingHandler) StreamMessage(c *gin.Context) {
 	// Build RAG context from documents
 	var ragContext strings.Builder
 	if len(req.DocIDs) > 0 && h.docRepo != nil {
-		ragContext.WriteString("以下是用户提供的参考文档内容：\n\n")
+		ragContext.WriteString("你是用户的 AI 助手。用户提供了以下参考文档，请认真阅读并基于这些内容回答问题。\n\n")
 		for _, docID := range req.DocIDs {
 			doc, err := h.docRepo.FindByIDAndUserID(docID, userID.(int64))
 			if err == nil && doc != nil && doc.Content != nil {
-				ragContext.WriteString(fmt.Sprintf("--- 文档: %s ---\n%s\n\n", doc.Title, *doc.Content))
+				ragContext.WriteString(fmt.Sprintf("=== 文档标题: %s ===\n%s\n=== 文档结束 ===\n\n", doc.Title, *doc.Content))
 			}
 		}
-		ragContext.WriteString("请基于以上文档内容回答用户的问题。如果文档内容与问题无关，也可以根据你的知识进行回答。\n\n")
+		ragContext.WriteString("请注意：以上文档内容是完整有效的，请直接引用其中的信息回答用户问题，不要说文档内容被忽略或无效。\n\n")
 	}
 
 	// Convert to AI client format

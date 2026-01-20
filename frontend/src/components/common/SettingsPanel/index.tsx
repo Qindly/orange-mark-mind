@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { UserInfo } from '@/types';
 // TODO: AI 配置功能暂时禁用，待后续版本完善后启用
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import AIProviderSettings from './AIProviderSettings';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import DefaultSummaryModel from './DefaultSummaryModel';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import ContextSettings from './ContextSettings';
+// 相关组件: AIProviderSettings, DefaultSummaryModel, ContextSettings
 import './SettingsPanel.scss';
 
 interface SystemInfo {

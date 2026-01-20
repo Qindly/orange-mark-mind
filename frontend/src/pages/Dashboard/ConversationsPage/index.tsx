@@ -21,14 +21,12 @@ function ConversationsPage() {
     const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
-    const [configs, setConfigs] = useState<AIConfig[]>([]);
     const [selectedConfig, setSelectedConfig] = useState<AIConfig | null>(null);
     const [selectedModel, setSelectedModel] = useState<string>('');
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editTitle, setEditTitle] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const [streamingContent, setStreamingContent] = useState<string>('');
     const [showDocSelector, setShowDocSelector] = useState(false);
     const [selectedDocs, setSelectedDocs] = useState<SelectedDocument[]>([]);
 
@@ -62,7 +60,6 @@ function ConversationsPage() {
         try {
             const res = await getAIConfigs();
             if (res.code === 0 && res.data) {
-                setConfigs(res.data);
                 const defaultConfig = res.data.find(c => c.is_default);
                 if (defaultConfig) {
                     setSelectedConfig(defaultConfig);
@@ -142,7 +139,6 @@ function ConversationsPage() {
         setMessages(prev => [...prev, userMessage, aiMessagePlaceholder]);
         setInputValue('');
         setSending(true);
-        setStreamingContent('');
 
         try {
             const token = localStorage.getItem('access_token') || '';
@@ -161,7 +157,6 @@ function ConversationsPage() {
                 (chunk: StreamChunk) => {
                     if (chunk.content) {
                         fullContent += chunk.content;
-                        setStreamingContent(fullContent);
                         // Update the AI message by ID instead of array position
                         setMessages(prev => prev.map(msg =>
                             msg.id === aiPlaceholderId
@@ -187,7 +182,6 @@ function ConversationsPage() {
             setMessages(prev => prev.filter(msg => msg.id !== aiPlaceholderId));
         } finally {
             setSending(false);
-            setStreamingContent('');
             // Clear selected documents after sending
             setSelectedDocs([]);
         }

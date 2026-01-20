@@ -155,6 +155,44 @@
         }
     }
 
+    &__docs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $spacing-xs;
+        padding: 0 $spacing-md $spacing-sm;
+    }
+
+    &__doc-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px $spacing-sm;
+        background: $color-primary-light;
+        border-radius: $radius-full;
+        font-size: $font-size-xs;
+        color: $color-primary;
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 12px;
+            line-height: 1;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
     &__toolbar {
         display: flex;
         align-items: center;

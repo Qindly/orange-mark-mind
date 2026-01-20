@@ -19,6 +19,7 @@ import (
 type StreamingHandler struct {
 	convSvc       *service.ConversationService
 	aiConfigRepo  *repository.AIConfigRepository
+	docRepo       *repository.DocumentRepository
 	aiClient      *service.AIClient
 	encryptionKey string
 }
@@ -27,12 +28,14 @@ type StreamingHandler struct {
 func NewStreamingHandler(
 	convSvc *service.ConversationService,
 	aiConfigRepo *repository.AIConfigRepository,
+	docRepo *repository.DocumentRepository,
 	aiClient *service.AIClient,
 	encryptionKey string,
 ) *StreamingHandler {
 	return &StreamingHandler{
 		convSvc:       convSvc,
 		aiConfigRepo:  aiConfigRepo,
+		docRepo:       docRepo,
 		aiClient:      aiClient,
 		encryptionKey: encryptionKey,
 	}
@@ -102,13 +105,36 @@ func (h *StreamingHandler) StreamMessage(c *gin.Context) {
 		return
 	}
 
+	// Build RAG context from documents
+	var ragContext strings.Builder
+	if len(req.DocIDs) > 0 && h.docRepo != nil {
+		ragContext.WriteString("以下是用户提供的参考文档内容：\n\n")
+		for _, docID := range req.DocIDs {
+			doc, err := h.docRepo.FindByIDAndUserID(docID, userID.(int64))
+			if err == nil && doc != nil && doc.Content != nil {
+				ragContext.WriteString(fmt.Sprintf("--- 文档: %s ---\n%s\n\n", doc.Title, *doc.Content))
+			}
+		}
+		ragContext.WriteString("请基于以上文档内容回答用户的问题。如果文档内容与问题无关，也可以根据你的知识进行回答。\n\n")
+	}
+
 	// Convert to AI client format
-	chatMessages := make([]service.ChatMessage, len(messages))
-	for i, msg := range messages {
-		chatMessages[i] = service.ChatMessage{
+	var chatMessages []service.ChatMessage
+
+	// Add RAG context as system message if available
+	if ragContext.Len() > 0 {
+		chatMessages = append(chatMessages, service.ChatMessage{
+			Role:    "system",
+			Content: ragContext.String(),
+		})
+	}
+
+	// Add conversation history
+	for _, msg := range messages {
+		chatMessages = append(chatMessages, service.ChatMessage{
 			Role:    msg.Role,
 			Content: msg.Content,
-		}
+		})
 	}
 
 	// Set SSE headers

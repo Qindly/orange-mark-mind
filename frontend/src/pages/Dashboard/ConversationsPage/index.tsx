@@ -9,6 +9,8 @@ import {
 import { getAIConfigs } from '@/api/ai';
 import type { ConversationDetail, Message, StreamChunk } from '@/api/conversations';
 import type { AIConfig } from '@/types/ai';
+import DocumentSelector from '@/components/Chat/DocumentSelector';
+import type { SelectedDocument } from '@/components/Chat/DocumentSelector';
 import './ConversationsPage.scss';
 
 function ConversationsPage() {
@@ -27,6 +29,8 @@ function ConversationsPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [streamingContent, setStreamingContent] = useState<string>('');
+    const [showDocSelector, setShowDocSelector] = useState(false);
+    const [selectedDocs, setSelectedDocs] = useState<SelectedDocument[]>([]);
 
     useEffect(() => {
         loadConfigs();
@@ -143,11 +147,15 @@ function ConversationsPage() {
             const token = localStorage.getItem('access_token') || '';
             let fullContent = '';
 
+            // Include selected document IDs for RAG
+            const docIds = selectedDocs.map(d => parseInt(d.id));
+
             await sendMessageStream(
                 currentConvId,
                 {
                     content: inputValue,
                     model: selectedModel,
+                    doc_ids: docIds.length > 0 ? docIds : undefined,
                 },
                 (chunk: StreamChunk) => {
                     if (chunk.content) {
@@ -311,19 +319,27 @@ function ConversationsPage() {
                         onKeyDown={handleKeyDown}
                         rows={1}
                     />
+                    {/* Selected documents tags */}
+                    {selectedDocs.length > 0 && (
+                        <div className="chat-input__docs">
+                            {selectedDocs.map(doc => (
+                                <span key={doc.id} className="chat-input__doc-tag">
+                                    {doc.title}
+                                    <button onClick={() => setSelectedDocs(prev => prev.filter(d => d.id !== doc.id))}>×</button>
+                                </span>
+                            ))}
+                        </div>
+                    )}
                     <div className="chat-input__toolbar">
                         <div className="chat-input__toolbar-left">
-                            <button className="chat-input__btn" title="添加文档引用">
+                            <button
+                                className="chat-input__btn"
+                                title="添加文档引用"
+                                onClick={() => setShowDocSelector(true)}
+                            >
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M12 5v14M5 12h14" />
                                 </svg>
-                            </button>
-                            <button className="chat-input__btn" title="工具">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="3" />
-                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                                </svg>
-                                <span>工具</span>
                             </button>
                         </div>
                         <div className="chat-input__toolbar-right">
@@ -358,6 +374,14 @@ function ConversationsPage() {
                     AI 回复仅供参考，请注意核查
                 </p>
             </footer>
+
+            {/* Document Selector Modal */}
+            <DocumentSelector
+                isOpen={showDocSelector}
+                onClose={() => setShowDocSelector(false)}
+                onSelect={setSelectedDocs}
+                selectedDocs={selectedDocs}
+            />
         </div>
     );
 }

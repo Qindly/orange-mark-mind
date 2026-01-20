@@ -177,7 +177,8 @@ func main() {
 
 			// Streaming routes
 			aiClient := service.NewAIClient()
-			streamingHandler := handler.NewStreamingHandler(convService, aiConfigRepo, aiClient, cfg.EncryptionKey)
+			docRepo := repository.NewDocumentRepository(db)
+			streamingHandler := handler.NewStreamingHandler(convService, aiConfigRepo, docRepo, aiClient, cfg.EncryptionKey)
 			conversations.POST("/:id/messages/stream", streamingHandler.StreamMessage)
 			conversations.POST("/:id/messages/regenerate/stream", streamingHandler.StreamRegenerate)
 		}

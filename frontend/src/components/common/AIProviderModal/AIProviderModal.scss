@@ -1,0 +1,191 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.ai-provider-modal {
+    padding: $spacing-sm 0;
+
+    &__error {
+        padding: $spacing-sm $spacing-md;
+        background: rgba($color-error, 0.1);
+        color: $color-error;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-md;
+    }
+
+    &__field {
+        margin-bottom: $spacing-md;
+    }
+
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        color: $color-text;
+        margin-bottom: $spacing-xs;
+    }
+
+    &__label-hint {
+        font-weight: 400;
+        color: $color-text-light;
+        font-size: $font-size-xs;
+    }
+
+    &__input,
+    &__select {
+        width: 100%;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        color: $color-text;
+        background: white;
+        transition: all $transition-fast;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+        }
+
+        &::placeholder {
+            color: $color-text-light;
+        }
+    }
+
+    &__select {
+        cursor: pointer;
+    }
+
+    &__hint {
+        margin-top: $spacing-xs;
+        font-size: $font-size-xs;
+        color: $color-text-secondary;
+
+        code {
+            padding: 2px $spacing-xs;
+            background: $color-bg-gray;
+            border-radius: $radius-sm;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            word-break: break-all;
+        }
+    }
+
+    &__models {
+        &-input {
+            display: flex;
+            gap: $spacing-xs;
+
+            .ai-provider-modal__input {
+                flex: 1;
+            }
+        }
+
+        &-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: $spacing-xs;
+            margin-top: $spacing-sm;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+    }
+
+    &__model-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: $spacing-xs;
+        padding: 4px $spacing-sm;
+        background: $color-bg-gray;
+        border-radius: $radius-full;
+        font-size: $font-size-xs;
+        color: $color-text;
+    }
+
+    &__model-remove {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        color: $color-text-light;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: $color-error;
+        }
+    }
+
+    &__btn {
+        padding: $spacing-xs $spacing-md;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all $transition-fast;
+        border: none;
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &--add {
+            padding: $spacing-xs $spacing-sm;
+            background: $color-primary;
+            color: white;
+            font-size: $font-size-base;
+            font-weight: 600;
+
+            &:hover:not(:disabled) {
+                background: darken($color-primary, 8%);
+            }
+        }
+
+        &--fetch {
+            background: $color-bg-gray;
+            color: $color-text;
+            white-space: nowrap;
+
+            &:hover:not(:disabled) {
+                background: darken($color-bg-gray, 5%);
+            }
+        }
+
+        &--cancel {
+            background: transparent;
+            color: $color-text-secondary;
+            border: 1px solid $color-border;
+
+            &:hover:not(:disabled) {
+                background: $color-bg-gray;
+            }
+        }
+
+        &--save {
+            background: $color-primary;
+            color: white;
+
+            &:hover:not(:disabled) {
+                background: darken($color-primary, 8%);
+            }
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-sm;
+        margin-top: $spacing-lg;
+        padding-top: $spacing-md;
+        border-top: 1px solid $color-border-light;
+    }
+}

@@ -13,6 +13,7 @@ import FavoritesPage from '@/pages/Dashboard/FavoritesPage';
 import TrashPage from '@/pages/Dashboard/TrashPage';
 import TemplatesPage from '@/pages/Dashboard/TemplatesPage';
 import SettingsPage from '@/pages/Dashboard/SettingsPage';
+import ConversationsPage from '@/pages/Dashboard/ConversationsPage';
 
 // Knowledge Base Pages
 import KnowledgeBase from '@/pages/KnowledgeBase';
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Navigate to="start" replace />,
+      },
+      {
+        path: 'conversations',
+        element: <ConversationsPage />,
       },
       {
         path: 'start',

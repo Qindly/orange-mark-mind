@@ -1,6 +1,7 @@
 # ============================================================================
 # Orange Mark Mind - Docker Compose 配置
 # 用于本地开发和服务器部署
+# 端口分配: 60100 (前端), 60101 (PostgreSQL), 60102 (Redis), 60103 (后端内部)
 # ============================================================================
 
 services:
@@ -66,7 +67,7 @@ services:
 
   # --------------------------------------------------------------------------
   # 后端 API 服务
-  # 端口: 60100
+  # 内部端口: 60100 (仅通过 Docker 网络访问，前端 nginx 代理)
   # --------------------------------------------------------------------------
   backend:
     build:
@@ -74,8 +75,9 @@ services:
       dockerfile: Dockerfile
     container_name: omm-backend
     restart: unless-stopped
-    ports:
-      - "60100:60100"
+    # 不暴露到宿主机，仅通过 Docker 内部网络访问
+    expose:
+      - "60100"
     environment:
       # 服务配置
       PORT: 60100
@@ -110,6 +112,39 @@ services:
           "--tries=1",
           "--spider",
           "http://localhost:60100/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    networks:
+      - omm-network
+
+  # --------------------------------------------------------------------------
+  # 前端服务 (Nginx)
+  # 端口: 60100 (外部访问入口)
+  # 负责: 静态文件服务 + API 代理
+  # --------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: omm-frontend
+    restart: unless-stopped
+    ports:
+      - "60100:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:80/",
         ]
       interval: 30s
       timeout: 3s

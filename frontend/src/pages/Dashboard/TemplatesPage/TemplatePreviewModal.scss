@@ -1,0 +1,117 @@
+@use '../../../styles/_variables' as *;
+
+.template-preview-modal {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+
+    &__preview {
+        &-title {
+            font-size: $font-size-sm;
+            color: $color-text-secondary;
+            margin: 0 0 $spacing-sm 0;
+        }
+    }
+
+    &__content {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: $spacing-md;
+        background: $color-bg-gray;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+
+        // 滚动条样式
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: $color-border;
+            border-radius: 3px;
+        }
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-md;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xs;
+
+        label {
+            font-size: $font-size-sm;
+            color: $color-text-secondary;
+        }
+
+        input,
+        select {
+            padding: $spacing-sm $spacing-md;
+            border: 1px solid $color-border;
+            border-radius: $radius-md;
+            font-size: $font-size-base;
+            transition: border-color $transition-fast;
+
+            &:focus {
+                outline: none;
+                border-color: $color-primary;
+            }
+        }
+    }
+
+    &__error {
+        font-size: $font-size-sm;
+        color: $color-error;
+        margin: 0;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-sm;
+        padding-top: $spacing-sm;
+        border-top: 1px solid $color-border-light;
+    }
+
+    &__btn {
+        padding: $spacing-sm $spacing-lg;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &--secondary {
+            background: $color-bg-white;
+            border: 1px solid $color-border;
+            color: $color-text-secondary;
+
+            &:hover {
+                border-color: $color-text-secondary;
+            }
+        }
+
+        &--primary {
+            background: $color-primary;
+            border: none;
+            color: white;
+
+            &:hover:not(:disabled) {
+                background: $color-primary-hover;
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+    }
+}

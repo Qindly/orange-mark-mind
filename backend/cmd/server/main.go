@@ -116,6 +116,21 @@ func main() {
 			documents.POST("/:id/restore", docHandler.Restore)
 		}
 
+		// 模板路由（需要认证）
+		templateRepo := repository.NewTemplateRepository(db)
+		templateService := service.NewTemplateService(templateRepo, docRepo)
+		templateHandler := handler.NewTemplateHandler(templateService)
+		templates := v1.Group("/templates")
+		templates.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		{
+			templates.GET("", templateHandler.GetList)
+			templates.POST("", templateHandler.Create)
+			templates.GET("/:id", templateHandler.GetByID)
+			templates.PUT("/:id", templateHandler.Update)
+			templates.DELETE("/:id", templateHandler.Delete)
+			templates.POST("/:id/use", templateHandler.UseTemplate)
+		}
+
 		// 管理员路由（需要认证 + 管理员权限）
 		adminService := service.NewAdminService(userRepo, folderRepo, docRepo)
 		adminHandler := handler.NewAdminHandler(adminService)

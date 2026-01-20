@@ -2,65 +2,217 @@
 @use '../../../styles/mixins' as *;
 
 .conversations-page {
-    padding: $spacing-xl;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    background: $color-bg;
 
     &__header {
-        margin-bottom: $spacing-xl;
+        display: flex;
+        align-items: center;
+        padding: $spacing-md $spacing-lg;
+        border-bottom: 1px solid $color-border-light;
+        background: white;
     }
 
     &__title {
-        font-size: $font-size-2xl;
+        margin: 0;
+        font-size: $font-size-lg;
         font-weight: 600;
         color: $color-text;
-        margin: 0 0 $spacing-sm 0;
+        cursor: pointer;
+        padding: $spacing-xs $spacing-sm;
+        border-radius: $radius-md;
+        transition: background $transition-fast;
+
+        &:hover {
+            background: $color-bg-hover;
+        }
     }
 
-    &__subtitle {
-        font-size: $font-size-base;
-        color: $color-text-secondary;
-        margin: 0;
+    &__title-edit {
+        input {
+            font-size: $font-size-lg;
+            font-weight: 600;
+            color: $color-text;
+            border: 1px solid $color-primary;
+            border-radius: $radius-md;
+            padding: $spacing-xs $spacing-sm;
+            outline: none;
+        }
     }
 
-    &__placeholder {
+    &__loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: $color-text-light;
+    }
+
+    &__messages {
         flex: 1;
+        overflow-y: auto;
+        padding: $spacing-lg;
+    }
+
+    &__empty {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        height: 100%;
+        color: $color-text-light;
         text-align: center;
-        padding: $spacing-2xl;
-    }
 
-    &__placeholder-icon {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, rgba($color-primary, 0.1) 0%, rgba($color-primary, 0.05) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: $spacing-lg;
-        color: $color-primary;
+        &-icon {
+            margin-bottom: $spacing-md;
+            opacity: 0.5;
+        }
 
-        svg {
-            opacity: 0.8;
+        p {
+            font-size: $font-size-lg;
+            font-weight: 500;
+            margin: 0 0 $spacing-xs;
+            color: $color-text;
+        }
+
+        span {
+            font-size: $font-size-sm;
         }
     }
 
-    &__placeholder-title {
-        font-size: $font-size-xl;
-        font-weight: 600;
-        color: $color-text;
-        margin: 0 0 $spacing-sm 0;
+    &__message {
+        display: flex;
+        gap: $spacing-md;
+        margin-bottom: $spacing-lg;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+
+        &--user {
+            .conversations-page__message-content {
+                background: rgba($color-primary, 0.1);
+            }
+        }
+
+        &--assistant {
+            .conversations-page__message-content {
+                background: white;
+                border: 1px solid $color-border-light;
+            }
+        }
     }
 
-    &__placeholder-text {
+    &__message-avatar {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    &__message-content {
+        flex: 1;
+        padding: $spacing-md;
+        border-radius: $radius-lg;
+    }
+
+    &__message-text {
         font-size: $font-size-base;
+        line-height: 1.6;
+        color: $color-text;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    &__message-meta {
+        margin-top: $spacing-sm;
+        font-size: $font-size-xs;
         color: $color-text-light;
-        margin: 0;
-        max-width: 300px;
+    }
+
+    &__input-area {
+        padding: $spacing-md $spacing-lg $spacing-lg;
+        background: white;
+        border-top: 1px solid $color-border-light;
+    }
+
+    &__input-controls {
+        display: flex;
+        gap: $spacing-sm;
+        margin-bottom: $spacing-sm;
+    }
+
+    &__config-select,
+    &__model-select {
+        padding: $spacing-xs $spacing-sm;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        color: $color-text;
+        background: white;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+        }
+    }
+
+    &__input-wrapper {
+        display: flex;
+        gap: $spacing-sm;
+        align-items: flex-end;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    &__input {
+        flex: 1;
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $color-border;
+        border-radius: $radius-lg;
+        font-size: $font-size-base;
+        resize: none;
+        min-height: 44px;
+        max-height: 120px;
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+        }
+
+        &::placeholder {
+            color: $color-text-light;
+        }
+    }
+
+    &__send-btn {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: $radius-lg;
+        background: $color-primary;
+        color: white;
+        cursor: pointer;
+        transition: all $transition-fast;
+        flex-shrink: 0;
+
+        &:hover:not(:disabled) {
+            background: darken($color-primary, 10%);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     }
 }

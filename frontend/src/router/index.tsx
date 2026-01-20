@@ -95,6 +95,10 @@ const router = createBrowserRouter([
         element: <ConversationsPage />,
       },
       {
+        path: 'conversations/:id',
+        element: <ConversationsPage />,
+      },
+      {
         path: 'start',
         element: <StartPage />,
       },

@@ -1,5 +1,6 @@
 // AI 配置相关 API
 
+import request from '../utils/request';
 import type { ApiResponse } from '@/types/api';
 import type {
     AIConfig,
@@ -9,88 +10,39 @@ import type {
     AIModel,
 } from '@/types/ai';
 
-const API_BASE = '/api/v1';
-
 // 获取 AI 配置列表
-export async function getAIConfigs(): Promise<ApiResponse<AIConfig[]>> {
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE}/ai-configs`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.json();
-}
+export const getAIConfigs = (): Promise<ApiResponse<AIConfig[]>> => {
+    return request.get('/ai-configs');
+};
 
 // 创建 AI 配置
-export async function createAIConfig(
+export const createAIConfig = (
     data: CreateAIConfigRequest
-): Promise<ApiResponse<AIConfig>> {
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE}/ai-configs`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-    });
-    return response.json();
-}
+): Promise<ApiResponse<AIConfig>> => {
+    return request.post('/ai-configs', data);
+};
 
 // 更新 AI 配置
-export async function updateAIConfig(
+export const updateAIConfig = (
     id: number,
     data: UpdateAIConfigRequest
-): Promise<ApiResponse<AIConfig>> {
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE}/ai-configs/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-    });
-    return response.json();
-}
+): Promise<ApiResponse<AIConfig>> => {
+    return request.put(`/ai-configs/${id}`, data);
+};
 
 // 删除 AI 配置
-export async function deleteAIConfig(id: number): Promise<ApiResponse<null>> {
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE}/ai-configs/${id}`, {
-        method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.json();
-}
+export const deleteAIConfig = (id: number): Promise<ApiResponse<null>> => {
+    return request.delete(`/ai-configs/${id}`);
+};
 
 // 设为默认配置
-export async function setDefaultAIConfig(id: number): Promise<ApiResponse<AIConfig>> {
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE}/ai-configs/${id}/default`, {
-        method: 'PUT',
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    return response.json();
-}
+export const setDefaultAIConfig = (id: number): Promise<ApiResponse<AIConfig>> => {
+    return request.put(`/ai-configs/${id}/default`);
+};
 
 // 从上游获取模型列表
-export async function fetchModels(
+export const fetchModels = (
     data: FetchModelsRequest
-): Promise<ApiResponse<AIModel[]>> {
-    const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE}/ai-configs/models`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-    });
-    return response.json();
-}
+): Promise<ApiResponse<AIModel[]>> => {
+    return request.post('/ai-configs/models', data);
+};

@@ -93,7 +93,7 @@
         transition: all $transition-fast;
 
         &:hover {
-            background: $color-bg-hover;
+            background: $color-bg-gray;
 
             .conversation-list__item-delete {
                 opacity: 1;

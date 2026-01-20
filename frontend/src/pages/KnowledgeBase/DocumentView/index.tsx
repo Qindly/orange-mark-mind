@@ -232,6 +232,30 @@ function DocumentView() {
     }
   };
 
+  // 切换收藏状态
+  const handleToggleFavorite = async () => {
+    if (!docId || !document) return;
+
+    const newFavoriteStatus = !document.is_favorited;
+
+    try {
+      const res = await updateDocument(docId, {
+        is_favorited: newFavoriteStatus,
+      });
+
+      if (res.code === 0) {
+        setDocument(prev => prev ? {
+          ...prev,
+          is_favorited: newFavoriteStatus,
+        } : null);
+      } else {
+        console.error('切换收藏状态失败:', res.message);
+      }
+    } catch (error) {
+      console.error('切换收藏状态失败:', error);
+    }
+  };
+
   const renderContent = (content: string) => {
     const lines = content.split('\n');
     return lines.map((line, index) => {
@@ -295,7 +319,13 @@ function DocumentView() {
         )}
         <div className="document-view__actions">
           {isEditing && renderSaveStatus()}
-          {document.is_favorited && <span className="doc-star">⭐</span>}
+          <button
+            className={`favorite-btn ${document.is_favorited ? 'favorite-btn--active' : ''}`}
+            onClick={handleToggleFavorite}
+            title={document.is_favorited ? '取消收藏' : '收藏'}
+          >
+            {document.is_favorited ? '★' : '☆'}
+          </button>
           {isEditing ? (
             <>
               <button

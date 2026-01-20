@@ -52,8 +52,25 @@
     align-items: center;
     gap: $spacing-sm;
 
-    .doc-star {
-      font-size: 18px;
+    .favorite-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: $color-text-light;
+      padding: $spacing-xs;
+      border-radius: $radius-sm;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #faad14;
+        background-color: rgba(250, 173, 20, 0.1);
+        transform: scale(1.1);
+      }
+
+      &--active {
+        color: #faad14;
+      }
     }
 
     .save-status {

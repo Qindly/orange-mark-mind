@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DocumentItem, PageHeader, EmptyState } from '@/components';
 import { fetchFavoriteDocuments } from '@/api/documents';
 import type { Document } from '@/types';
 import './FavoritesPage.scss';
 
 function FavoritesPage() {
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +37,12 @@ function FavoritesPage() {
     });
   };
 
+  const handleDocumentClick = (doc: Document) => {
+    if (doc.folder_id) {
+      navigate(`/${doc.folder_id}/${doc.id}`);
+    }
+  };
+
   return (
     <div className="favorites-page">
       <PageHeader title="收藏" icon="⭐" />
@@ -43,10 +51,10 @@ function FavoritesPage() {
         {loading ? (
           <div className="favorites-page__loading">加载中...</div>
         ) : documents.length === 0 ? (
-          <EmptyState 
-            icon="⭐" 
-            title="暂无收藏" 
-            description="点击文档右上角的星标即可收藏" 
+          <EmptyState
+            icon="⭐"
+            title="暂无收藏"
+            description="点击文档右上角的星标即可收藏"
           />
         ) : (
           <div className="favorites-page__list">
@@ -57,6 +65,7 @@ function FavoritesPage() {
                 title={doc.title}
                 folderName={doc.folder_name}
                 date={formatDate(doc.updated_at)}
+                onClick={() => handleDocumentClick(doc)}
               />
             ))}
           </div>
@@ -67,3 +76,4 @@ function FavoritesPage() {
 }
 
 export default FavoritesPage;
+

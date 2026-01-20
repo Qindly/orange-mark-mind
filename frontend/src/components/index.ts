@@ -11,3 +11,4 @@ export { default as CreateFolderModal } from './common/CreateFolderModal';
 export { default as EditFolderModal } from './common/EditFolderModal';
 export { default as ResizableSidebar } from './common/ResizableSidebar';
 export { default as SettingsPanel } from './common/SettingsPanel';
+export { default as AIProviderModal } from './common/AIProviderModal';

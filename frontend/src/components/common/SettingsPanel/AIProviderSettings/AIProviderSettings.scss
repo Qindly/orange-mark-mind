@@ -1,0 +1,146 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/mixins' as *;
+
+.ai-provider-settings {
+    &__header {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: $spacing-md;
+    }
+
+    &__add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: $spacing-xs;
+        padding: $spacing-xs $spacing-md;
+        background: $color-primary;
+        color: white;
+        border: none;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: darken($color-primary, 8%);
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+
+    &__loading,
+    &__empty {
+        padding: $spacing-lg;
+        text-align: center;
+        color: $color-text-secondary;
+        font-size: $font-size-sm;
+    }
+
+    &__empty-hint {
+        margin-top: $spacing-xs;
+        color: $color-text-light;
+        font-size: $font-size-xs;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-sm;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $spacing-sm $spacing-md;
+        background: $color-bg-gray;
+        border-radius: $radius-md;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: darken($color-bg-gray, 3%);
+        }
+    }
+
+    &__item-info {
+        flex: 1;
+        cursor: pointer;
+        min-width: 0;
+    }
+
+    &__item-name {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        color: $color-text;
+        margin-bottom: 4px;
+    }
+
+    &__default-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px $spacing-xs;
+        background: linear-gradient(135deg, $color-primary 0%, darken($color-primary, 10%) 100%);
+        color: white;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        font-weight: 500;
+    }
+
+    &__item-meta {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+
+    &__item-type {
+        padding: 2px $spacing-xs;
+        background: $color-border-light;
+        border-radius: $radius-sm;
+    }
+
+    &__item-actions {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        flex-shrink: 0;
+    }
+
+    &__action-btn {
+        padding: $spacing-xs $spacing-sm;
+        background: transparent;
+        color: $color-primary;
+        border: 1px solid $color-primary;
+        border-radius: $radius-sm;
+        font-size: $font-size-xs;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: $color-primary;
+            color: white;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &--danger {
+            color: $color-error;
+            border-color: $color-error;
+
+            &:hover {
+                background: $color-error;
+                color: white;
+            }
+        }
+    }
+}

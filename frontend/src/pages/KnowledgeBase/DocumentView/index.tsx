@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchDocumentById, updateDocument, deleteDocument } from '@/api/documents';
+import { MarkdownRenderer } from '@/components';
 import type { Document } from '@/types';
 import './DocumentView.scss';
 
@@ -256,30 +257,7 @@ function DocumentView() {
     }
   };
 
-  const renderContent = (content: string) => {
-    const lines = content.split('\n');
-    return lines.map((line, index) => {
-      if (line.startsWith('# ')) {
-        return <h1 key={index} className="doc-h1">{line.slice(2)}</h1>;
-      }
-      if (line.startsWith('## ')) {
-        return <h2 key={index} className="doc-h2">{line.slice(3)}</h2>;
-      }
-      if (line.startsWith('### ')) {
-        return <h3 key={index} className="doc-h3">{line.slice(4)}</h3>;
-      }
-      if (line.startsWith('```')) {
-        return null;
-      }
-      if (line.match(/^\d+\. /)) {
-        return <p key={index} className="doc-list-item">{line}</p>;
-      }
-      if (line.trim()) {
-        return <p key={index} className="doc-paragraph">{line}</p>;
-      }
-      return <br key={index} />;
-    });
-  };
+
 
   const renderSaveStatus = () => {
     switch (saveStatus) {
@@ -369,7 +347,7 @@ function DocumentView() {
           />
         ) : (
           <article className="document-view__body">
-            {renderContent(document.content || '')}
+            <MarkdownRenderer content={document.content || ''} />
           </article>
         )}
       </div>

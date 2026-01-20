@@ -41,6 +41,19 @@ function KnowledgeBase() {
     loadFolderData();
   }, [loadFolderData]);
 
+  // 重新加载文档列表（仅文档，不加载文件夹）
+  const reloadDocuments = useCallback(async () => {
+    if (!folderId) return;
+    try {
+      const docsRes = await fetchDocumentsByFolder(folderId);
+      if (docsRes.code === 0) {
+        setDocuments(docsRes.data);
+      }
+    } catch (error) {
+      console.error("Failed to reload documents:", error);
+    }
+  }, [folderId]);
+
   // 监听文档标题更新事件，精准更新对应文档的标题（不刷新整个列表）
   useEffect(() => {
     const handleDocumentTitleUpdated = (event: Event) => {
@@ -53,11 +66,18 @@ function KnowledgeBase() {
       ));
     };
 
+    const handleDocumentDeleted = () => {
+      // 重新从后端获取文档列表，确保数据一致
+      reloadDocuments();
+    };
+
     window.addEventListener('document-title-updated', handleDocumentTitleUpdated);
+    window.addEventListener('document-deleted', handleDocumentDeleted);
     return () => {
       window.removeEventListener('document-title-updated', handleDocumentTitleUpdated);
+      window.removeEventListener('document-deleted', handleDocumentDeleted);
     };
-  }, []);
+  }, [reloadDocuments]);
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");

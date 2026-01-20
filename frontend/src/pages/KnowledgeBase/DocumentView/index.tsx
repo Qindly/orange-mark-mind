@@ -216,6 +216,10 @@ function DocumentView() {
     try {
       const res = await deleteDocument(docId);
       if (res.code === 0) {
+        // 派发事件通知侧边栏更新
+        window.dispatchEvent(new CustomEvent('document-deleted', {
+          detail: { docId }
+        }));
         // 删除成功，跳转回知识库首页
         navigate(`/${folderId}`);
       } else {

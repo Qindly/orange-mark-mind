@@ -142,6 +142,19 @@ func main() {
 			aiConfigs.DELETE("/:id", aiConfigHandler.Delete)
 			aiConfigs.PUT("/:id/default", aiConfigHandler.SetDefault)
 		}
+
+		// 用户设置路由（需要认证）
+		userSettingRepo := repository.NewUserSettingRepository(db)
+		userSettingService := service.NewUserSettingService(userSettingRepo)
+		userSettingHandler := handler.NewUserSettingHandler(userSettingService)
+		settings := v1.Group("/settings")
+		settings.Use(middleware.AuthMiddleware(cfg.JWTSecret, authService))
+		{
+			settings.GET("", userSettingHandler.GetAll)
+			settings.GET("/:key", userSettingHandler.Get)
+			settings.PUT("/:key", userSettingHandler.Update)
+			settings.DELETE("/:key", userSettingHandler.Delete)
+		}
 	}
 
 	// 启动服务器

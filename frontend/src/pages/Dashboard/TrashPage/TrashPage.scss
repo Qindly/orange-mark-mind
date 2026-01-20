@@ -5,16 +5,60 @@
   &__content {
     margin-top: $spacing-lg;
   }
-  
+
   &__list {
     @include flex-column;
     gap: 2px;
   }
-  
+
   &__loading {
     padding: $spacing-2xl;
     text-align: center;
     color: $color-text-light;
     font-size: $font-size-sm;
+  }
+
+  // 确认弹窗样式
+  &__confirm {
+    padding: $spacing-md 0;
+  }
+
+  &__confirm-warning {
+    font-size: $font-size-sm;
+    color: $color-text;
+    margin-bottom: $spacing-sm;
+    line-height: 1.6;
+
+    strong {
+      color: $color-error;
+    }
+  }
+
+  &__confirm-tip {
+    font-size: $font-size-xs;
+    color: $color-text-light;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-sm;
+  }
+}
+
+// 危险按钮样式
+.btn-danger {
+  background: $color-error;
+  color: #fff;
+  border: none;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: darken($color-error, 10%);
   }
 }

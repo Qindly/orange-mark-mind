@@ -9,11 +9,11 @@
   border-radius: $radius-md;
   cursor: pointer;
   transition: background $transition-fast;
-  
+
   &:hover {
     background: $color-bg-gray;
   }
-  
+
   &__icon {
     width: 32px;
     height: 32px;
@@ -23,12 +23,12 @@
     font-size: 16px;
     flex-shrink: 0;
   }
-  
+
   &__content {
     flex: 1;
     min-width: 0;
   }
-  
+
   &__title {
     font-size: $font-size-sm;
     font-weight: 500;
@@ -36,16 +36,55 @@
     margin-bottom: 2px;
     @include text-ellipsis;
   }
-  
+
   &__folder {
     font-size: $font-size-xs;
     color: $color-text-light;
   }
-  
+
   &__date {
     font-size: $font-size-xs;
     color: $color-text-light;
     white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-xs;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
+
+  &:hover &__actions {
+    opacity: 1;
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: $radius-sm;
+    background: $color-bg-gray;
+    color: $color-text-secondary;
+    font-size: $font-size-xs;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+
+    &--danger {
+      &:hover {
+        background: #FFF1F0;
+        color: $color-error;
+      }
+    }
   }
 }

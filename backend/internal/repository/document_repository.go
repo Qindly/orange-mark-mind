@@ -62,11 +62,13 @@ func (r *DocumentRepository) FindByFolderID(folderID, userID int64) ([]model.Doc
 	return docs, err
 }
 
-// FindRecent 获取最近更新的文档
+// FindRecent 获取最近更新的文档（只返回有有效知识库的文档）
 func (r *DocumentRepository) FindRecent(userID int64, limit int) ([]model.Document, error) {
 	var docs []model.Document
-	err := r.db.Where("user_id = ? AND is_deleted = false", userID).
-		Order("updated_at DESC").
+	// 使用 JOIN 确保只返回 folder_id 有效且对应的文件夹存在的文档
+	err := r.db.Where("documents.user_id = ? AND documents.is_deleted = false AND documents.folder_id IS NOT NULL", userID).
+		Joins("INNER JOIN folders ON folders.id = documents.folder_id").
+		Order("documents.updated_at DESC").
 		Limit(limit).
 		Find(&docs).Error
 	return docs, err

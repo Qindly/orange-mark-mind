@@ -174,6 +174,12 @@ func main() {
 			conversations.POST("/:id/restore", convHandler.Restore)
 			conversations.POST("/:id/messages", convHandler.SendMessage)
 			conversations.POST("/:id/messages/:msgId/regenerate", convHandler.RegenerateMessage)
+
+			// Streaming routes
+			aiClient := service.NewAIClient()
+			streamingHandler := handler.NewStreamingHandler(convService, aiConfigRepo, aiClient, cfg.EncryptionKey)
+			conversations.POST("/:id/messages/stream", streamingHandler.StreamMessage)
+			conversations.POST("/:id/messages/regenerate/stream", streamingHandler.StreamRegenerate)
 		}
 	}
 

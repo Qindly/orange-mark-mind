@@ -1,9 +1,7 @@
 package service
 
 import (
-	"context"
 	"errors"
-	"io"
 
 	"github.com/Qindly/orange-mark-mind/internal/model"
 	"github.com/Qindly/orange-mark-mind/internal/repository"
@@ -205,14 +203,6 @@ func (s *ConversationService) GetLastAssistantMessage(conversationID int64) (*mo
 	return s.msgRepo.GetLastAssistantMessage(conversationID)
 }
 
-// StreamCallback 流式响应回调
-type StreamCallback func(chunk string) error
-
-// StreamChatCompletion 流式聊天（接口定义，具体实现在 AI service）
-type StreamChatCompletion interface {
-	Stream(ctx context.Context, messages []model.Message, modelName string, callback StreamCallback) (string, error)
-}
-
 // RegenerateLastResponse 重新生成最后一条 AI 回复
 func (s *ConversationService) RegenerateLastResponse(conversationID int64) (*model.Message, error) {
 	// 获取最后一条 AI 消息
@@ -230,27 +220,4 @@ func (s *ConversationService) RegenerateLastResponse(conversationID int64) (*mod
 	}
 
 	return lastMsg, nil
-}
-
-// AIClient AI 客户端接口
-type AIClient interface {
-	StreamChat(ctx context.Context, messages []ChatMessage, model string, w io.Writer) error
-}
-
-// ChatMessage AI 聊天消息格式
-type ChatMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-// ToAIChatMessages 转换消息格式
-func ToAIChatMessages(messages []model.Message) []ChatMessage {
-	result := make([]ChatMessage, len(messages))
-	for i, msg := range messages {
-		result[i] = ChatMessage{
-			Role:    msg.Role,
-			Content: msg.Content,
-		}
-	}
-	return result
 }

@@ -12,3 +12,6 @@ export { default as EditFolderModal } from './common/EditFolderModal';
 export { default as ResizableSidebar } from './common/ResizableSidebar';
 export { default as SettingsPanel } from './common/SettingsPanel';
 export { default as AIProviderModal } from './common/AIProviderModal';
+export { default as MarkdownRenderer } from './common/MarkdownRenderer';
+export { default as TableOfContents } from './common/TableOfContents';
+

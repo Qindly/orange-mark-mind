@@ -1,0 +1,83 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.table-of-contents {
+    position: sticky;
+    top: $spacing-lg;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding: $spacing-md;
+    background-color: #fafafa;
+    border-radius: $radius-md;
+    border: 1px solid $color-border-light;
+
+    &__title {
+        font-size: $font-size-sm;
+        font-weight: 600;
+        color: $color-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: $spacing-sm;
+        padding-bottom: $spacing-xs;
+        border-bottom: 1px solid $color-border-light;
+    }
+
+    &__list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    &__item {
+        margin: 2px 0;
+
+        &--level-1 {
+            padding-left: 0;
+        }
+
+        &--level-2 {
+            padding-left: $spacing-md;
+        }
+
+        &--level-3 {
+            padding-left: $spacing-xl;
+        }
+    }
+
+    &__link {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: $spacing-xs $spacing-sm;
+        border: none;
+        background: none;
+        color: $color-text;
+        font-size: $font-size-sm;
+        line-height: 1.4;
+        border-radius: $radius-sm;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: $color-primary;
+        }
+    }
+
+    // 滚动条样式
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: $color-border-light;
+        border-radius: 2px;
+    }
+}

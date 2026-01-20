@@ -1,0 +1,203 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/mixins' as *;
+
+.markdown-renderer {
+    line-height: 1.8;
+    color: $color-text;
+    font-size: $font-size-base;
+
+    // 标题样式
+    h1 {
+        font-size: $font-size-2xl;
+        font-weight: 700;
+        margin: $spacing-lg 0 $spacing-md;
+        padding-bottom: $spacing-sm;
+        border-bottom: 1px solid $color-border-light;
+    }
+
+    h2 {
+        font-size: $font-size-xl;
+        font-weight: 600;
+        margin: $spacing-lg 0 $spacing-sm;
+    }
+
+    h3 {
+        font-size: $font-size-lg;
+        font-weight: 600;
+        margin: $spacing-md 0 $spacing-sm;
+    }
+
+    h4,
+    h5,
+    h6 {
+        font-size: $font-size-base;
+        font-weight: 600;
+        margin: $spacing-sm 0;
+    }
+
+    // 段落
+    p {
+        margin: $spacing-sm 0;
+    }
+
+    // 粗体和斜体
+    strong {
+        font-weight: 700;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    // 行内代码
+    code:not(pre code) {
+        background-color: rgba(0, 0, 0, 0.05);
+        padding: 2px 6px;
+        border-radius: $radius-sm;
+        font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        font-size: 0.9em;
+        color: #d63384;
+    }
+
+    // 代码块
+    pre {
+        background-color: #f6f8fa;
+        border-radius: $radius-md;
+        padding: $spacing-md;
+        overflow-x: auto;
+        margin: $spacing-md 0;
+
+        code {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: $font-size-sm;
+            line-height: 1.6;
+            color: $color-text;
+        }
+    }
+
+    // 无序列表
+    ul {
+        list-style-type: disc;
+        padding-left: $spacing-xl;
+        margin: $spacing-sm 0;
+
+        li {
+            margin: $spacing-xs 0;
+        }
+
+        ul {
+            list-style-type: circle;
+        }
+    }
+
+    // 有序列表
+    ol {
+        list-style-type: decimal;
+        padding-left: $spacing-xl;
+        margin: $spacing-sm 0;
+
+        li {
+            margin: $spacing-xs 0;
+        }
+    }
+
+    // 引用块
+    blockquote {
+        border-left: 4px solid $color-primary;
+        padding-left: $spacing-md;
+        margin: $spacing-md 0;
+        color: $color-text-light;
+        background-color: rgba(0, 0, 0, 0.02);
+        padding: $spacing-sm $spacing-md;
+        border-radius: 0 $radius-sm $radius-sm 0;
+    }
+
+    // 分割线
+    hr {
+        border: none;
+        border-top: 1px solid $color-border-light;
+        margin: $spacing-lg 0;
+    }
+
+    // 链接
+    a {
+        color: $color-primary;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    // 表格
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: $spacing-md 0;
+
+        th,
+        td {
+            border: 1px solid $color-border-light;
+            padding: $spacing-sm $spacing-md;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f6f8fa;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+    }
+
+    // 任务列表
+    input[type="checkbox"] {
+        margin-right: $spacing-xs;
+    }
+
+    // 图片
+    img {
+        max-width: 100%;
+        border-radius: $radius-md;
+        margin: $spacing-md 0;
+    }
+
+    // Mermaid 图表
+    .mermaid-diagram {
+        display: flex;
+        justify-content: center;
+        margin: $spacing-md 0;
+        padding: $spacing-md;
+        background-color: #fafafa;
+        border-radius: $radius-md;
+        overflow-x: auto;
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+
+    .mermaid-error {
+        margin: $spacing-md 0;
+        padding: $spacing-md;
+        background-color: #fff2f0;
+        border: 1px solid #ffccc7;
+        border-radius: $radius-md;
+        color: #ff4d4f;
+
+        span {
+            display: block;
+            margin-bottom: $spacing-sm;
+            font-weight: 600;
+        }
+
+        pre {
+            background-color: rgba(0, 0, 0, 0.02);
+            color: $color-text-light;
+            font-size: $font-size-sm;
+        }
+    }
+}

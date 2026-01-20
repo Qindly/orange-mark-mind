@@ -124,7 +124,8 @@ export const sendMessageStream = async (
     onChunk: (chunk: StreamChunk) => void,
     token: string
 ): Promise<void> => {
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:60100';
+    // Use the same base URL as the axios request
+    const baseURL = 'http://159.195.57.204:60100';
     const url = `${baseURL}/api/v1/conversations/${conversationId}/messages/stream`;
 
     const response = await fetch(url, {
@@ -178,7 +179,8 @@ export const regenerateMessageStream = async (
     onChunk: (chunk: StreamChunk) => void,
     token: string
 ): Promise<void> => {
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:60100';
+    // Use the same base URL as the axios request
+    const baseURL = 'http://159.195.57.204:60100';
     const url = `${baseURL}/api/v1/conversations/${conversationId}/messages/regenerate/stream`;
 
     const response = await fetch(url, {

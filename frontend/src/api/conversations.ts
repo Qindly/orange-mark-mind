@@ -3,6 +3,15 @@
 import request from '../utils/request';
 import type { ApiResponse } from '@/types/api';
 
+// API 基础地址（从环境变量读取）
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+// 为 SSE 请求获取基础 URL（如果是相对路径，使用当前 origin）
+const getBaseURL = () => {
+    if (API_BASE_URL.startsWith('http')) {
+        return API_BASE_URL.replace('/api/v1', '');
+    }
+    return '';
+};
 // 对话列表项
 export interface ConversationListItem {
     id: number;
@@ -125,7 +134,7 @@ export const sendMessageStream = async (
     token: string
 ): Promise<void> => {
     // Use the same base URL as the axios request
-    const baseURL = 'http://159.195.57.204:60100';
+    const baseURL = getBaseURL();
     const url = `${baseURL}/api/v1/conversations/${conversationId}/messages/stream`;
 
     const response = await fetch(url, {
@@ -180,7 +189,7 @@ export const regenerateMessageStream = async (
     token: string
 ): Promise<void> => {
     // Use the same base URL as the axios request
-    const baseURL = 'http://159.195.57.204:60100';
+    const baseURL = getBaseURL();
     const url = `${baseURL}/api/v1/conversations/${conversationId}/messages/regenerate/stream`;
 
     const response = await fetch(url, {

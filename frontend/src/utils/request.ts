@@ -6,9 +6,12 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
+// API 基础地址（从环境变量读取）
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+
 // 创建 axios 实例
 const request = axios.create({
-  baseURL: 'http://159.195.57.204:60100/api/v1',
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -48,7 +51,7 @@ request.interceptors.response.use(
           throw new Error('No refresh token');
         }
 
-        const res = await axios.post('http://159.195.57.204:60100/api/v1/auth/refresh', {
+        const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refresh_token: refreshToken,
         });
 

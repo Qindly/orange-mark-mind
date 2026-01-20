@@ -92,10 +92,30 @@
     }
   }
 
+  &__main {
+    flex: 1;
+    display: flex;
+    gap: $spacing-xl;
+    overflow: hidden;
+  }
+
   &__content {
     flex: 1;
     overflow-y: auto;
     padding: $spacing-xl;
+    min-width: 0; // 防止 flex 子项溢出
+  }
+
+  &__toc {
+    width: 220px;
+    flex-shrink: 0;
+    padding: $spacing-lg $spacing-lg $spacing-lg 0;
+    overflow-y: auto;
+
+    // 屏幕宽度小于 1100px 时隐藏 TOC
+    @media (max-width: 1100px) {
+      display: none;
+    }
   }
 
   &__editor {

@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
+import rehypeSlug from 'rehype-slug';
 import mermaid from 'mermaid';
 import 'highlight.js/styles/github.css';
 import 'katex/dist/katex.min.css';
@@ -86,7 +87,7 @@ function MarkdownRenderer({ content }: MarkdownRendererProps) {
         <div className="markdown-renderer">
             <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeHighlight, rehypeKatex]}
+                rehypePlugins={[rehypeSlug, rehypeHighlight, rehypeKatex]}
                 components={{
                     code: CustomCode,
                 }}

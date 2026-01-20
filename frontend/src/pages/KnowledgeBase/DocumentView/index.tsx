@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchDocumentById, updateDocument, deleteDocument } from '@/api/documents';
-import { MarkdownRenderer } from '@/components';
+import { MarkdownRenderer, TableOfContents } from '@/components';
 import type { Document } from '@/types';
 import './DocumentView.scss';
 
@@ -337,18 +337,25 @@ function DocumentView() {
       </header>
 
       {/* 正文内容 */}
-      <div className="document-view__content">
-        {isEditing ? (
-          <textarea
-            className="document-view__editor"
-            value={editContent}
-            onChange={handleContentChange}
-            placeholder="开始编写..."
-          />
-        ) : (
-          <article className="document-view__body">
-            <MarkdownRenderer content={document.content || ''} />
-          </article>
+      <div className="document-view__main">
+        <div className="document-view__content">
+          {isEditing ? (
+            <textarea
+              className="document-view__editor"
+              value={editContent}
+              onChange={handleContentChange}
+              placeholder="开始编写..."
+            />
+          ) : (
+            <article className="document-view__body">
+              <MarkdownRenderer content={document.content || ''} />
+            </article>
+          )}
+        </div>
+        {!isEditing && document.content && (
+          <aside className="document-view__toc">
+            <TableOfContents content={document.content} />
+          </aside>
         )}
       </div>
     </div>

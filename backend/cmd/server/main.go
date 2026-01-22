@@ -87,6 +87,7 @@ func main() {
 		{
 			authProtected.POST("/logout", authHandler.Logout)
 			authProtected.POST("/logout-all", authHandler.LogoutAll)
+			authProtected.PUT("/password", authHandler.ChangePassword)
 		}
 
 		// 知识库路由（需要认证）

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import Sidebar from '@/layouts/Sidebar';
-import { Modal, SettingsPanel } from '@/components';
+import { Modal, SettingsPanel, ChangePasswordModal } from '@/components';
 import { logout } from '@/api/auth';
 import type { UserInfo } from '@/types';
 import './DashboardLayout.scss';
@@ -11,6 +11,7 @@ function DashboardLayout() {
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getUserInfo = (): UserInfo | null => {
@@ -144,11 +145,16 @@ function DashboardLayout() {
       >
         <SettingsPanel
           onChangePassword={() => {
-            // TODO: 实现修改密码功能
-            console.log('Change password clicked');
+            setShowSettings(false);
+            setShowChangePassword(true);
           }}
         />
       </Modal>
+
+      <ChangePasswordModal
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </div>
   );
 }

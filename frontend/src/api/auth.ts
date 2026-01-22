@@ -32,3 +32,10 @@ export const refreshToken = (): Promise<ApiResponse<TokenInfo>> => {
   const token = localStorage.getItem('refresh_token');
   return request.post('/auth/refresh', { refresh_token: token });
 };
+
+/**
+ * 修改密码
+ */
+export const changePassword = (data: { old_password: string; new_password: string }): Promise<ApiResponse<{ message: string }>> => {
+  return request.put('/auth/password', data);
+};

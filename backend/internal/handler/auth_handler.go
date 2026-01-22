@@ -91,7 +91,7 @@ func (h *AuthHandler) Refresh(c *gin.Context) {
 func (h *AuthHandler) Logout(c *gin.Context) {
 	// 从 Header 获取 Access Token
 	accessToken := extractToken(c)
-	
+
 	// 从请求体获取 Refresh Token
 	var req struct {
 		RefreshToken string `json:"refresh_token"`
@@ -127,6 +127,44 @@ func (h *AuthHandler) LogoutAll(c *gin.Context) {
 
 	response.Success(c, gin.H{
 		"message": "logged out from all devices successfully",
+	})
+}
+
+// ChangePassword 修改密码
+// PUT /api/v1/auth/password
+func (h *AuthHandler) ChangePassword(c *gin.Context) {
+	// 从上下文获取用户 ID（由中间件设置）
+	userID, exists := c.Get("user_id")
+	if !exists {
+		response.Error(c, response.CodeUnauthorized)
+		return
+	}
+
+	var req service.ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.ErrorWithMessage(c, response.CodeParamError, err.Error())
+		return
+	}
+
+	if err := h.authService.ChangePassword(userID.(int64), &req); err != nil {
+		if strings.Contains(err.Error(), "incorrect old password") {
+			response.ErrorWithMessage(c, response.CodeInvalidCredentials, "旧密码错误")
+			return
+		}
+		if strings.Contains(err.Error(), "user not found") {
+			response.Error(c, response.CodeUnauthorized)
+			return
+		}
+		if strings.Contains(err.Error(), "disabled") {
+			response.Error(c, response.CodeUserDisabled)
+			return
+		}
+		response.ErrorWithMessage(c, response.CodeInternalError, err.Error())
+		return
+	}
+
+	response.Success(c, gin.H{
+		"message": "password changed successfully",
 	})
 }
 

@@ -284,6 +284,48 @@ func (s *AuthService) IsAccessTokenBlacklisted(accessToken string) (bool, error)
 	return exists > 0, nil
 }
 
+// ChangePasswordRequest 修改密码请求
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required,min=6,max=50"`
+}
+
+// ChangePassword 修改密码
+func (s *AuthService) ChangePassword(userID int64, req *ChangePasswordRequest) error {
+	// 查找用户
+	user, err := s.userRepo.FindByID(userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user not found")
+		}
+		return err
+	}
+
+	// 检查用户状态
+	if !user.IsActive() {
+		return errors.New("user is disabled")
+	}
+
+	// 验证旧密码
+	if !utils.CheckPassword(req.OldPassword, user.PasswordHash) {
+		return errors.New("incorrect old password")
+	}
+
+	// 加密新密码
+	newPasswordHash, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	// 更新密码
+	user.PasswordHash = newPasswordHash
+	if err := s.userRepo.Update(user); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // storeRefreshToken 存储 Refresh Token 到 Redis
 func (s *AuthService) storeRefreshToken(userID int64, username, refreshToken string) error {
 	ctx := context.Background()

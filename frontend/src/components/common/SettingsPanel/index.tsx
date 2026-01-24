@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { UserInfo } from '@/types';
-// TODO: AI 配置功能暂时禁用，待后续版本完善后启用
-// 相关组件: AIProviderSettings, DefaultSummaryModel, ContextSettings
+import AIProviderSettings from './AIProviderSettings';
+import DefaultSummaryModel from './DefaultSummaryModel';
+import ContextSettings from './ContextSettings';
 import './SettingsPanel.scss';
 
 interface SystemInfo {
@@ -285,20 +286,12 @@ function SettingsPanel({ onChangePassword }: SettingsPanelProps) {
                 </div>
             </section>
 
-            {/* 
-             * TODO: AI 配置功能暂时禁用，待后续版本完善后启用
-             * 相关组件已实现，包括：
-             * - AIProviderSettings: AI 提供商配置（支持 OpenAI 兼容/Gemini）
-             * - DefaultSummaryModel: 默认摘要模型选择
-             * - ContextSettings: 上下文轮数和最大 token 设置
-             * 启用时取消下方注释即可
-             */}
-            {/* <section className="settings-panel__section">
+            <section className="settings-panel__section">
                 <h3 className="settings-panel__section-title">AI 配置</h3>
                 <AIProviderSettings />
                 <DefaultSummaryModel />
                 <ContextSettings />
-            </section> */}
+            </section>
         </div>
     );
 }

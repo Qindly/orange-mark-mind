@@ -8,10 +8,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  // TODO: AI 对话功能暂时禁用，待后续版本完善后启用
-  // 相关代码已实现，包括：流式输出、RAG 文档引用、上下文设置等
-  // 启用时取消下行注释即可
-  // { key: 'conversations', label: '对话', path: '/dashboard/conversations' },
+  { key: 'conversations', label: '对话', path: '/dashboard/conversations' },
   { key: 'start', label: '开始', path: '/dashboard/start' },
   { key: 'favorites', label: '收藏', path: '/dashboard/favorites' },
   { key: 'trash', label: '回收站', path: '/dashboard/trash' },

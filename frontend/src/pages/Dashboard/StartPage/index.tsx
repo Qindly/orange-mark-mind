@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ActionCard, DocumentItem, TabGroup, PageHeader, CreateDocumentModal, CreateFolderModal } from '@/components';
 import { fetchRecentDocuments, createDocument } from '@/api/documents';
 import { createFolder } from '@/api/folders';
+import { formatDate } from '@/utils/format';
 import type { Document } from '@/types';
 import './StartPage.scss';
 
@@ -49,15 +50,6 @@ function StartPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
   };
 
   const handleNewDocument = () => {

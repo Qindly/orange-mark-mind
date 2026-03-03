@@ -1,28 +1,39 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { useAuthStore } from '@/stores/authStore';
 
-// Pages
-import Home from '@/pages/Home';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import Admin from '@/pages/Admin';
-
-// Dashboard Layout and Pages
+// Layout 组件保持同步导入（它们是骨架，需要立即渲染）
 import { DashboardLayout, AdminLayout } from '@/layouts';
-import StartPage from '@/pages/Dashboard/StartPage';
-import FavoritesPage from '@/pages/Dashboard/FavoritesPage';
-import TrashPage from '@/pages/Dashboard/TrashPage';
-import TemplatesPage from '@/pages/Dashboard/TemplatesPage';
-import SettingsPage from '@/pages/Dashboard/SettingsPage';
-import ConversationsPage from '@/pages/Dashboard/ConversationsPage';
 
-// Knowledge Base Pages
-import KnowledgeBase from '@/pages/KnowledgeBase';
-import DocumentView from '@/pages/KnowledgeBase/DocumentView';
+// 页面级组件懒加载
+const Home = lazy(() => import('@/pages/Home'));
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const Admin = lazy(() => import('@/pages/Admin'));
+const StartPage = lazy(() => import('@/pages/Dashboard/StartPage'));
+const FavoritesPage = lazy(() => import('@/pages/Dashboard/FavoritesPage'));
+const TrashPage = lazy(() => import('@/pages/Dashboard/TrashPage'));
+const TemplatesPage = lazy(() => import('@/pages/Dashboard/TemplatesPage'));
+const SettingsPage = lazy(() => import('@/pages/Dashboard/SettingsPage'));
+const KnowledgeBase = lazy(() => import('@/pages/KnowledgeBase'));
+const DocumentView = lazy(() => import('@/pages/KnowledgeBase/DocumentView'));
+
+// 懒加载 fallback
+const LazyFallback = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+    加载中...
+  </div>
+);
+
+// Suspense 包裹器
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<LazyFallback />}>{children}</Suspense>
+);
 
 // 路由守卫组件
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = localStorage.getItem('access_token');
-  if (!token) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
@@ -30,19 +41,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // Admin 路由守卫组件
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const token = localStorage.getItem('access_token');
-  const userInfo = localStorage.getItem('user_info');
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
 
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  try {
-    const user = userInfo ? JSON.parse(userInfo) : null;
-    if (user?.role !== 'admin') {
-      return <Navigate to="/dashboard" replace />;
-    }
-  } catch {
+  if (user?.role !== 'admin') {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -68,15 +74,15 @@ const NotFound = () => (
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: <S><Home /></S>,
   },
   {
     path: '/login',
-    element: <Login />,
+    element: <S><Login /></S>,
   },
   {
     path: '/register',
-    element: <Register />,
+    element: <S><Register /></S>,
   },
   {
     path: '/dashboard',
@@ -91,32 +97,24 @@ const router = createBrowserRouter([
         element: <Navigate to="start" replace />,
       },
       {
-        path: 'conversations',
-        element: <ConversationsPage />,
-      },
-      {
-        path: 'conversations/:id',
-        element: <ConversationsPage />,
-      },
-      {
         path: 'start',
-        element: <StartPage />,
+        element: <S><StartPage /></S>,
       },
       {
         path: 'favorites',
-        element: <FavoritesPage />,
+        element: <S><FavoritesPage /></S>,
       },
       {
         path: 'trash',
-        element: <TrashPage />,
+        element: <S><TrashPage /></S>,
       },
       {
         path: 'templates',
-        element: <TemplatesPage />,
+        element: <S><TemplatesPage /></S>,
       },
       {
         path: 'settings',
-        element: <SettingsPage />,
+        element: <S><SettingsPage /></S>,
       },
     ],
   },
@@ -131,7 +129,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Admin />,
+        element: <S><Admin /></S>,
       },
     ],
   },
@@ -141,13 +139,13 @@ const router = createBrowserRouter([
     path: '/:folderId',
     element: (
       <ProtectedRoute>
-        <KnowledgeBase />
+        <S><KnowledgeBase /></S>
       </ProtectedRoute>
     ),
     children: [
       {
         path: ':docId',
-        element: <DocumentView />,
+        element: <S><DocumentView /></S>,
       },
     ],
   },
@@ -159,4 +157,3 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
-

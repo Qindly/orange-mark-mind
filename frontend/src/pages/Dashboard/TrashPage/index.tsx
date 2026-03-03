@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { DocumentItem, PageHeader, EmptyState, Modal } from '@/components';
 import type { DocumentAction } from '@/components/common/DocumentItem';
 import { fetchDeletedDocuments, restoreDocument, deleteDocument } from '@/api/documents';
+import { formatDate } from '@/utils/format';
 import type { Document } from '@/types';
 import './TrashPage.scss';
 
@@ -70,15 +71,6 @@ function TrashPage() {
     } finally {
       setDeleting(null);
     }
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
   };
 
   const getActions = (docId: string): DocumentAction[] => [

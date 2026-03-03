@@ -1,26 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import { logout } from '@/api/auth';
-import type { UserInfo } from '@/types';
+import { useAuthStore } from '@/stores/authStore';
 import './AdminLayout.scss';
 
 function AdminLayout() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-
-    const getUserInfo = (): UserInfo | null => {
-        const userInfo = localStorage.getItem('user_info');
-        if (userInfo) {
-            try {
-                return JSON.parse(userInfo);
-            } catch {
-                return null;
-            }
-        }
-        return null;
-    };
-
-    const user = getUserInfo();
+    const user = useAuthStore((s) => s.user);
 
     const handleLogout = async () => {
         setLoading(true);
@@ -29,9 +16,7 @@ function AdminLayout() {
         } catch {
             console.log('Logout API failed, but clearing local tokens');
         } finally {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('user_info');
+            useAuthStore.getState().logout();
             navigate('/');
         }
     };

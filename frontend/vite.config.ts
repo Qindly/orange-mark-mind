@@ -10,4 +10,24 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-markdown': [
+            'react-markdown',
+            'remark-gfm',
+            'remark-math',
+            'rehype-highlight',
+            'rehype-katex',
+            'rehype-slug',
+            'highlight.js',
+            'katex',
+          ],
+          'vendor-mermaid': ['mermaid'],
+        },
+      },
+    },
+  },
 })

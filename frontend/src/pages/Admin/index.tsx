@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchUsers, updateUser, deleteUser, type UserListParams } from '@/api/admin';
+import { formatDateTime } from '@/utils/format';
 import type { UserInfo } from '@/types';
 import './Admin.scss';
 
@@ -97,17 +98,6 @@ function Admin() {
         }
     };
 
-    const formatDate = (dateStr: string) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
-
     const getRoleBadge = (role: string) => {
         switch (role) {
             case 'admin':
@@ -201,7 +191,7 @@ function Admin() {
                                     <td>{user.email}</td>
                                     <td>{getRoleBadge(user.role)}</td>
                                     <td>{getStatusBadge(user.status)}</td>
-                                    <td>{formatDate(user.created_at)}</td>
+                                    <td>{formatDateTime(user.created_at)}</td>
                                     <td>
                                         <div className="admin-page__actions">
                                             <button

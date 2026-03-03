@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '@/stores/authStore';
 import './Navbar.scss';
 
 interface NavbarProps {
@@ -7,13 +7,7 @@ interface NavbarProps {
 }
 
 function Navbar({ showAuthButton = true }: NavbarProps) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // 检查登录状态
-    const token = localStorage.getItem('access_token');
-    setIsLoggedIn(!!token);
-  }, []);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   return (
     <header className="navbar">
@@ -22,15 +16,15 @@ function Navbar({ showAuthButton = true }: NavbarProps) {
           <span className="navbar__logo-icon">🍊</span>
           <span className="navbar__logo-text">Orange Mark Mind</span>
         </Link>
-        
+
         <nav className="navbar__nav">
           <a href="#features">功能介绍</a>
           <a href="#about">关于我们</a>
         </nav>
-        
+
         {showAuthButton && (
           <div className="navbar__actions">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <Link to="/dashboard" className="btn btn-primary">
                 控制台
               </Link>

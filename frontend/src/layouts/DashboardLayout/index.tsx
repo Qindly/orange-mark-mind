@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import Sidebar from '@/layouts/Sidebar';
 import { Modal, SettingsPanel, ChangePasswordModal } from '@/components';
 import { logout } from '@/api/auth';
-import type { UserInfo } from '@/types';
+import { useAuthStore } from '@/stores/authStore';
+import { useClickOutside } from '@/hooks';
 import './DashboardLayout.scss';
 
 function DashboardLayout() {
@@ -14,34 +15,10 @@ function DashboardLayout() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const getUserInfo = (): UserInfo | null => {
-    const userInfo = localStorage.getItem('user_info');
-    if (userInfo) {
-      try {
-        return JSON.parse(userInfo);
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  };
-
-  const user = getUserInfo();
+  const user = useAuthStore((s) => s.user);
   const isAdmin = user?.role === 'admin';
 
-  // 点击外部关闭下拉菜单
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  useClickOutside(dropdownRef, useCallback(() => setShowDropdown(false), []));
 
   const handleLogout = async () => {
     setLoading(true);
@@ -50,9 +27,7 @@ function DashboardLayout() {
     } catch {
       console.log('Logout API failed, but clearing local tokens');
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user_info');
+      useAuthStore.getState().logout();
       navigate('/');
     }
   };

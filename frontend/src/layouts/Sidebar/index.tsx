@@ -1,53 +1,18 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { SidebarSearch, SidebarMenu, SidebarFolders, ConversationList } from './components';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SidebarSearch, SidebarMenu, SidebarFolders } from './components';
 import { CreateDocumentModal, CreateFolderModal } from '@/components';
 import { createFolder } from '@/api/folders';
 import { createDocument } from '@/api/documents';
+import { useResizable } from '@/hooks';
 import './Sidebar.scss';
 
 function Sidebar() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [sidebarWidth, setSidebarWidth] = useState(220);
-  const [isResizing, setIsResizing] = useState(false);
+  const { width, isResizing, ref: sidebarRef, startResizing } = useResizable({ minWidth: 180, maxWidth: 400, defaultWidth: 220 });
   const [isDocModalOpen, setIsDocModalOpen] = useState(false);
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [folderRefreshTrigger, setFolderRefreshTrigger] = useState(0);
-  const sidebarRef = useRef<HTMLElement>(null);
-
-  // Determine if we're in conversation mode based on route
-  const isConversationMode = location.pathname.startsWith('/dashboard/conversations');
-
-  // 拖拽调整宽度
-  const startResizing = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsResizing(true);
-  }, []);
-
-  const stopResizing = useCallback(() => {
-    setIsResizing(false);
-  }, []);
-
-  const resize = useCallback((e: MouseEvent) => {
-    if (isResizing && sidebarRef.current) {
-      const newWidth = e.clientX - sidebarRef.current.getBoundingClientRect().left;
-      if (newWidth >= 180 && newWidth <= 400) {
-        setSidebarWidth(newWidth);
-      }
-    }
-  }, [isResizing]);
-
-  useEffect(() => {
-    if (isResizing) {
-      window.addEventListener('mousemove', resize);
-      window.addEventListener('mouseup', stopResizing);
-    }
-    return () => {
-      window.removeEventListener('mousemove', resize);
-      window.removeEventListener('mouseup', stopResizing);
-    };
-  }, [isResizing, resize, stopResizing]);
 
   const handleNewDocument = () => {
     setIsDocModalOpen(true);
@@ -90,23 +55,17 @@ function Sidebar() {
       <aside
         ref={sidebarRef}
         className={`sidebar ${isResizing ? 'sidebar--resizing' : ''}`}
-        style={{ width: sidebarWidth }}
+        style={{ width }}
       >
         <div className="sidebar__top">
-          {!isConversationMode && (
-            <SidebarSearch onNewDocument={handleNewDocument} />
-          )}
+          <SidebarSearch onNewDocument={handleNewDocument} />
           <SidebarMenu />
         </div>
 
-        {isConversationMode ? (
-          <ConversationList />
-        ) : (
-          <SidebarFolders
-            onAddFolder={handleCreateFolder}
-            refreshTrigger={folderRefreshTrigger}
-          />
-        )}
+        <SidebarFolders
+          onAddFolder={handleCreateFolder}
+          refreshTrigger={folderRefreshTrigger}
+        />
 
         <div
           className="sidebar__resizer"

@@ -8,7 +8,6 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { key: 'conversations', label: '对话', path: '/dashboard/conversations' },
   { key: 'start', label: '开始', path: '/dashboard/start' },
   { key: 'favorites', label: '收藏', path: '/dashboard/favorites' },
   { key: 'trash', label: '回收站', path: '/dashboard/trash' },

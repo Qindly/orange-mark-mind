@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthCard } from '@/components';
 import { login } from '@/api/auth';
+import { useAuthStore } from '@/stores/authStore';
 import './Login.scss';
 
 function Login() {
@@ -37,9 +38,11 @@ function Login() {
     try {
       const res = await login(formData);
       if (res.code === 0) {
-        localStorage.setItem('access_token', res.data.tokens.access_token);
-        localStorage.setItem('refresh_token', res.data.tokens.refresh_token);
-        localStorage.setItem('user_info', JSON.stringify(res.data.user));
+        useAuthStore.getState().login(
+          res.data.user,
+          res.data.tokens.access_token,
+          res.data.tokens.refresh_token
+        );
         navigate('/dashboard');
       } else {
         setError(res.message || '登录失败');

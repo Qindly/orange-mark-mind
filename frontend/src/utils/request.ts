@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 // 扩展请求配置类型
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
@@ -21,7 +22,7 @@ const request = axios.create({
 // 请求拦截器 - 自动添加 Token
 request.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
+    const token = useAuthStore.getState().accessToken;
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,21 +33,51 @@ request.interceptors.request.use(
   }
 );
 
+// Refresh token 竞态锁
+let isRefreshing = false;
+let refreshQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: unknown) => void;
+}> = [];
+
+function processQueue(error: unknown, token: string | null) {
+  refreshQueue.forEach(({ resolve, reject }) => {
+    if (token) {
+      resolve(token);
+    } else {
+      reject(error);
+    }
+  });
+  refreshQueue = [];
+}
+
 // 响应拦截器 - 处理 Token 刷新
 request.interceptors.response.use(
   (response) => {
-    // 直接返回 data，简化调用
     return response.data;
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
-    // 如果是 401 且未重试过，尝试刷新 Token
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
+      // 已有刷新请求在进行中，排队等待
+      if (isRefreshing) {
+        return new Promise<string>((resolve, reject) => {
+          refreshQueue.push({ resolve, reject });
+        }).then((token) => {
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+          }
+          return request(originalRequest);
+        });
+      }
+
+      isRefreshing = true;
+
       try {
-        const refreshToken = localStorage.getItem('refresh_token');
+        const refreshToken = useAuthStore.getState().refreshToken;
         if (!refreshToken) {
           throw new Error('No refresh token');
         }
@@ -56,8 +87,10 @@ request.interceptors.response.use(
         });
 
         const { access_token, refresh_token } = res.data.data;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('refresh_token', refresh_token);
+        useAuthStore.getState().setTokens(access_token, refresh_token);
+
+        // 通知队列中的请求使用新 token
+        processQueue(null, access_token);
 
         // 重试原请求
         if (originalRequest.headers) {
@@ -65,11 +98,12 @@ request.interceptors.response.use(
         }
         return request(originalRequest);
       } catch (refreshError) {
-        // 刷新失败，清除 Token，跳转登录页
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        processQueue(refreshError, null);
+        useAuthStore.getState().logout();
         window.location.href = '/login';
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 

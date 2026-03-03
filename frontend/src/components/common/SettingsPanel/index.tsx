@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { UserInfo } from '@/types';
+import { useAuthStore } from '@/stores/authStore';
 import AIProviderSettings from './AIProviderSettings';
 import DefaultSummaryModel from './DefaultSummaryModel';
 import ContextSettings from './ContextSettings';
@@ -19,21 +19,7 @@ interface SettingsPanelProps {
 
 function SettingsPanel({ onChangePassword }: SettingsPanelProps) {
     const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(null);
-
-    // 获取用户信息
-    const getUserInfo = (): UserInfo | null => {
-        const userInfo = localStorage.getItem('user_info');
-        if (userInfo) {
-            try {
-                return JSON.parse(userInfo);
-            } catch {
-                return null;
-            }
-        }
-        return null;
-    };
-
-    const user = getUserInfo();
+    const user = useAuthStore((s) => s.user);
 
     // 解析操作系统信息
     const parseOS = (userAgent: string): { os: string; osVersion: string } => {

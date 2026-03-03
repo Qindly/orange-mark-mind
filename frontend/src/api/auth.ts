@@ -1,5 +1,6 @@
 import request from '../utils/request';
 import type { RegisterData, LoginData, UserInfo, TokenInfo, ApiResponse } from '../types';
+import { useAuthStore } from '@/stores/authStore';
 
 // API 接口
 
@@ -21,7 +22,7 @@ export const login = (data: LoginData): Promise<ApiResponse<{ user: UserInfo; to
  * 用户登出
  */
 export const logout = (): Promise<ApiResponse<{ message: string }>> => {
-  const refreshToken = localStorage.getItem('refresh_token');
+  const refreshToken = useAuthStore.getState().refreshToken;
   return request.post('/auth/logout', { refresh_token: refreshToken });
 };
 
@@ -29,7 +30,7 @@ export const logout = (): Promise<ApiResponse<{ message: string }>> => {
  * 刷新 Token
  */
 export const refreshToken = (): Promise<ApiResponse<TokenInfo>> => {
-  const token = localStorage.getItem('refresh_token');
+  const token = useAuthStore.getState().refreshToken;
   return request.post('/auth/refresh', { refresh_token: token });
 };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchDocuments } from '@/api/documents';
+import { useClickOutside } from '@/hooks';
 import type { Document } from '@/types';
 import './SidebarSearch.scss';
 
@@ -44,16 +45,7 @@ function SidebarSearch({ onNewDocument }: SidebarSearchProps) {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // 点击外部关闭
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setShowResults(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useClickOutside(containerRef, useCallback(() => setShowResults(false), []));
 
   // 键盘导航
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {

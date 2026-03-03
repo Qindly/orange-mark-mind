@@ -3,6 +3,7 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { ResizableSidebar, EditFolderModal } from "@/components";
 import { fetchFolderById, updateFolder, deleteFolder } from "@/api/folders";
 import { fetchDocumentsByFolder, createDocument } from "@/api/documents";
+import { formatRelativeDate } from "@/utils/format";
 import type { Folder, Document } from "@/types";
 import "./KnowledgeBase.scss";
 
@@ -262,23 +263,6 @@ function KBWelcome({
     return sum + (doc.content?.length || 0);
   }, 0);
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    if (diffDays === 0) {
-      return `今天 ${date.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}`;
-    }
-    return date.toLocaleDateString("zh-CN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  };
-
   return (
     <div className="kb-welcome">
       <header className="kb-welcome__header">
@@ -315,7 +299,7 @@ function KBWelcome({
           >
             <span className="kb-welcome__doc-title">{doc.title}</span>
             <span className="kb-welcome__doc-date">
-              {formatDate(doc.updated_at)}
+              {formatRelativeDate(doc.updated_at)}
             </span>
           </div>
         ))}

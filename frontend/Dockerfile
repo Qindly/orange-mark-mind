@@ -16,7 +16,7 @@ WORKDIR /app
 
 # 复制 package.json 和 pnpm-lock.yaml，利用缓存
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod=false
 
 # 复制源代码
 COPY . .
@@ -55,7 +55,7 @@ EXPOSE 80
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+    CMD wget -q -O /dev/null http://localhost:80/ || exit 1
 
 # 启动命令
 CMD ["nginx", "-g", "daemon off;"]

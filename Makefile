@@ -1,139 +1,198 @@
-# ============================================================================
-# Orange Mark Mind - Makefile
-# 常用命令集合
-# ============================================================================
+SHELL := /bin/bash
 
-.PHONY: help docker-up docker-down docker-logs migrate-up migrate-down migrate-create dev
+COMPOSE ?= docker compose
+SERVICES := postgres redis backend frontend
+MIGRATE_SERVICE := migrate
 
-# 默认目标
-help:
-	@echo "Orange Mark Mind - 可用命令:"
-	@echo ""
-	@echo "Docker 命令:"
-	@echo "  make docker-up       - 启动 PostgreSQL 和 Redis"
-	@echo "  make docker-down     - 停止并删除容器"
-	@echo "  make docker-logs     - 查看容器日志"
-	@echo "  make docker-ps       - 查看容器状态"
-	@echo ""
-	@echo "数据库迁移:"
-	@echo "  make migrate-up      - 执行所有迁移"
-	@echo "  make migrate-down    - 回滚最后一次迁移"
-	@echo "  make migrate-down-all- 回滚所有迁移"
-	@echo "  make migrate-version - 查看当前迁移版本"
-	@echo "  make migrate-create NAME=xxx - 创建新迁移"
-	@echo ""
-	@echo "开发命令:"
-	@echo "  make dev-backend     - 启动后端开发服务器"
-	@echo "  make dev-frontend    - 启动前端开发服务器"
-	@echo ""
+.PHONY: \
+	help \
+	Qindy \
+	up \
+	up-db \
+	wait-db \
+	down \
+	restart \
+	ps \
+	logs \
+	logs-backend \
+	clean \
+	dev-backend \
+	dev-frontend \
+	dev \
+	migrate-up \
+	migrate-down \
+	migrate-down-all \
+	migrate-version \
+	migrate-up-local \
+	migrate-down-local \
+	migrate-down-all-local \
+	migrate-version-local \
+	migrate-create \
+	docker-up \
+	docker-up-db \
+	docker-down \
+	docker-logs \
+	docker-logs-backend \
+	docker-ps \
+	docker-clean
 
-# --------------------------------------------------------------------------
-# Docker 命令
-# --------------------------------------------------------------------------
-
-# 启动所有服务（包括后端）
-docker-up:
-	docker compose up -d
-	@echo "等待服务启动..."
-	@sleep 5
-	@docker compose ps
-
-# 仅启动数据库服务
-docker-up-db:
-	docker compose up -d postgres redis
-	@echo "等待数据库服务启动..."
-	@sleep 3
-	@docker compose ps
-
-# 构建后端镜像
-docker-build:
-	docker compose build backend
-	@echo "后端镜像构建完成"
-
-# 重新构建并启动后端
-docker-rebuild:
-	docker compose up -d --build backend
-	@echo "后端服务已重新构建并启动"
-
-# 停止服务
-docker-down:
-	docker compose down
-
-# 停止服务并删除数据卷（危险！会删除所有数据）
-docker-clean:
-	docker compose down -v
-	@echo "已删除所有容器和数据卷"
-
-# 查看日志
-docker-logs:
-	docker compose logs -f
-
-# 查看后端日志
-docker-logs-backend:
-	docker compose logs -f backend
-
-# 查看容器状态
-docker-ps:
-	docker compose ps
-
-# --------------------------------------------------------------------------
-# 数据库迁移命令
-# 需要先安装 migrate CLI: https://github.com/golang-migrate/migrate
-# --------------------------------------------------------------------------
-
-# 从 .env 读取数据库 URL
-include .env
+# Optional env loading for local development and local migration commands.
+-include .env
+-include backend/.env
 export
 
-# 迁移命令
-MIGRATE_CMD = migrate -path backend/migrations -database "$(DATABASE_URL_LOCAL)"
+MIGRATE_DB_URL ?= $(if $(DATABASE_URL_LOCAL),$(DATABASE_URL_LOCAL),$(DATABASE_URL))
+MIGRATE_CMD = migrate -path backend/migrations -database "$(MIGRATE_DB_URL)"
+PG_USER ?= $(if $(POSTGRES_USER),$(POSTGRES_USER),omm_user)
+PG_DB ?= $(if $(POSTGRES_DB),$(POSTGRES_DB),orange_mark_mind)
 
-# 执行所有迁移
-migrate-up:
-	$(MIGRATE_CMD) up
-	@echo "迁移完成"
+help:
+	@echo "Orange Mark Mind - common commands"
+	@echo ""
+	@echo "Container:"
+	@echo "  make Qindy         Start 4 containers; run migrate only if not initialized"
+	@echo "  make up            Start 4 containers and run DB migrations first"
+	@echo "  make up-db         Start only postgres + redis"
+	@echo "  make down          Stop and remove containers"
+	@echo "  make restart       Restart all 4 containers"
+	@echo "  make ps            Show container status"
+	@echo "  make logs          Follow all logs"
+	@echo "  make logs-backend  Follow backend logs only"
+	@echo "  make clean         Stop and remove containers + volumes"
+	@echo ""
+	@echo "Local dev:"
+	@echo "  make dev-backend   Run backend locally (uses backend/.env)"
+	@echo "  make dev-frontend  Run frontend locally on VITE_PORT"
+	@echo "  make dev           Print recommended local dev workflow"
+	@echo ""
+	@echo "Migrations (dockerized, recommended):"
+	@echo "  make migrate-up"
+	@echo "  make migrate-down"
+	@echo "  make migrate-down-all"
+	@echo "  make migrate-version"
+	@echo ""
+	@echo "Migrations (local CLI):"
+	@echo "  make migrate-up-local"
+	@echo "  make migrate-down-local"
+	@echo "  make migrate-down-all-local"
+	@echo "  make migrate-version-local"
+	@echo "  make migrate-create NAME=add_table_name"
 
-# 回滚最后一次迁移
-migrate-down:
-	$(MIGRATE_CMD) down 1
-	@echo "已回滚 1 个迁移"
+up:
+	$(COMPOSE) up -d postgres redis
+	@echo "Running database migrations..."
+	@$(MAKE) migrate-up
+	$(COMPOSE) up -d backend frontend
+	@echo "Waiting for containers..."
+	@sleep 3
+	@$(COMPOSE) ps
 
-# 回滚所有迁移
-migrate-down-all:
-	$(MIGRATE_CMD) down -all
-	@echo "已回滚所有迁移"
+Qindy:
+	$(COMPOSE) up -d postgres redis
+	@$(MAKE) wait-db
+	@echo "Checking migration state..."
+	@if $(COMPOSE) exec -T postgres psql -U $(PG_USER) -d $(PG_DB) -tAc "SELECT to_regclass('public.schema_migrations') IS NOT NULL;" | tr -d '[:space:]' | grep -q '^t$$'; then \
+		echo "schema_migrations exists, skip migrate-up."; \
+	else \
+		echo "schema_migrations not found, running migrate-up..."; \
+		$(MAKE) migrate-up; \
+	fi
+	$(COMPOSE) up -d backend frontend
+	@echo "Waiting for containers..."
+	@sleep 3
+	@$(COMPOSE) ps
 
-# 查看当前版本
-migrate-version:
-	$(MIGRATE_CMD) version
+up-db:
+	$(COMPOSE) up -d postgres redis
+	@echo "Waiting for postgres/redis..."
+	@sleep 2
+	@$(COMPOSE) ps
 
-# 强制设置版本（用于修复脏状态）
-migrate-force:
-	@read -p "输入版本号: " version; \
-	$(MIGRATE_CMD) force $$version
+wait-db:
+	@echo "Waiting for postgres to be ready..."
+	@until $(COMPOSE) exec -T postgres pg_isready -U $(PG_USER) -d $(PG_DB) >/dev/null 2>&1; do \
+		sleep 1; \
+	done
 
-# 创建新迁移
-migrate-create:
-ifndef NAME
-	$(error 请指定迁移名称: make migrate-create NAME=xxx)
-endif
-	migrate create -ext sql -dir backend/migrations -seq $(NAME)
-	@echo "已创建迁移: $(NAME)"
+down:
+	$(COMPOSE) down
 
-# --------------------------------------------------------------------------
-# 开发命令
-# --------------------------------------------------------------------------
+restart: down up
 
-# 启动后端开发服务器
+ps:
+	$(COMPOSE) ps
+
+logs:
+	$(COMPOSE) logs -f
+
+logs-backend:
+	$(COMPOSE) logs -f backend
+
+clean:
+	$(COMPOSE) down -v
+
 dev-backend:
 	cd backend && go run cmd/server/main.go
 
-# 启动前端开发服务器
 dev-frontend:
-	cd frontend && pnpm dev
+	cd frontend && pnpm dev --host 0.0.0.0 --port $${VITE_PORT:-60103}
 
-# 同时启动前后端（需要安装 concurrently 或使用多终端）
 dev:
-	@echo "请在两个终端分别运行:"
-	@echo "  终端1: make dev-backend"
-	@echo "  终端2: make dev-frontend"
+	@echo "Recommended local dev steps:"
+	@echo "  1) make up-db"
+	@echo "  2) make migrate-up"
+	@echo "  3) make dev-backend"
+	@echo "  4) make dev-frontend"
+
+# Use dockerized migrate by default so local machine does not need migrate CLI.
+migrate-up:
+	@set +e; \
+	output="$$( $(COMPOSE) run --rm -T $(MIGRATE_SERVICE) 2>&1 )"; \
+	status=$$?; \
+	set -e; \
+	echo "$$output"; \
+	if [ $$status -ne 0 ] && ! echo "$$output" | grep -qi "no change"; then \
+		exit $$status; \
+	fi
+
+migrate-down:
+	$(COMPOSE) run --rm -T $(MIGRATE_SERVICE) down 1
+
+migrate-down-all:
+	$(COMPOSE) run --rm -T $(MIGRATE_SERVICE) down -all
+
+migrate-version:
+	$(COMPOSE) run --rm -T $(MIGRATE_SERVICE) version
+
+check-migrate-env:
+	@if [ -z "$(MIGRATE_DB_URL)" ]; then \
+		echo "DATABASE_URL_LOCAL or DATABASE_URL is required in .env/backend/.env"; \
+		exit 1; \
+	fi
+
+migrate-up-local: check-migrate-env
+	$(MIGRATE_CMD) up
+
+migrate-down-local: check-migrate-env
+	$(MIGRATE_CMD) down 1
+
+migrate-down-all-local: check-migrate-env
+	$(MIGRATE_CMD) down -all
+
+migrate-version-local: check-migrate-env
+	$(MIGRATE_CMD) version
+
+migrate-create:
+ifndef NAME
+	$(error Please provide NAME, e.g. make migrate-create NAME=add_users_table)
+endif
+	migrate create -ext sql -dir backend/migrations -seq $(NAME)
+
+# Backward-compatible aliases.
+docker-up: up
+docker-up-db: up-db
+docker-down: down
+docker-logs: logs
+docker-logs-backend: logs-backend
+docker-ps: ps
+docker-clean: clean
